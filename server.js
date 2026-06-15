@@ -1,43 +1,38 @@
 /**
- * MindBloom — Story Wall Backend
- * Express + SQLite | Bad-word filter | Rate limiting | Real-time WebSockets
+ * MindBloom — Story Wall Backend (Vercel Ready)
+ * Express + Neon/Vercel Postgres | Bad-word filter | Rate limiting | Polling
  */
-
+require('dotenv').config();
 const express  = require('express');
-const http     = require('http');
-const { Server } = require('socket.io');
-const { DatabaseSync } = require('node:sqlite');
+const { sql }  = require('@neondatabase/serverless');
 const cors     = require('cors');
 const path     = require('path');
 
 const app  = express();
-const server = http.createServer(app);
-const io = new Server(server, { cors: { origin: '*' } });
-const PORT = 3001;
+const PORT = process.env.PORT || 3001;
 
-/* ── Database ────────────────────────────────────────────── */
-const db = new DatabaseSync(path.join(__dirname, 'mindbloom.db'));
-
-db.exec(`
-  CREATE TABLE IF NOT EXISTS stories (
-    id         INTEGER PRIMARY KEY AUTOINCREMENT,
-    feeling    TEXT    NOT NULL,
-    text       TEXT    NOT NULL,
-    emoji      TEXT    NOT NULL DEFAULT '🌸',
-    sticker_color TEXT NOT NULL DEFAULT 'sn-y',
-    created_at DATETIME DEFAULT (datetime('now','localtime'))
-  );
-
-  CREATE TABLE IF NOT EXISTS rate_limits (
-    ip         TEXT PRIMARY KEY,
-    count      INTEGER DEFAULT 1,
-    window_start INTEGER
-  );
-`);
+/* ── Database Init ───────────────────────────────────────── */
+async function initDB() {
+  try {
+    await sql`
+      CREATE TABLE IF NOT EXISTS stories (
+        id            SERIAL PRIMARY KEY,
+        feeling       VARCHAR(255) NOT NULL,
+        text          TEXT NOT NULL,
+        emoji         VARCHAR(255) NOT NULL DEFAULT '🌸',
+        sticker_color VARCHAR(255) NOT NULL DEFAULT 'sn-y',
+        created_at    TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      );
+    `;
+  } catch (err) {
+    console.error('DB Init error (make sure DATABASE_URL is set):', err);
+  }
+}
+// Vercel Serverless functions can execute this on cold start
+initDB();
 
 /* ── Bad-word list (server-side, English + common slang) ── */
 const BAD_WORDS = [
-  /* Tier 1 — explicit profanity */
   'fuck','fucked','fucker','fucking','fucks','f u c k',
   'shit','shitting','shitter','shits',
   'bitch','bitches','bitching',
@@ -59,45 +54,20 @@ const BAD_WORDS = [
   'bollocks',
   'motherfucker','motherfuckers','mf',
   'wtf','stfu','gtfo',
-  /* Tier 2 — hateful / discriminatory */
-  'kike','kikes',
-  'spic','spics',
-  'chink','chinks',
-  'gook','gooks',
-  'tranny','trannies',
-  'dyke','dykes',
-  /* Tier 3 — self-harm / dangerous content */
-  'kill yourself','kys','end yourself',
-  'go die','should die',
-  'hang yourself','slit your',
-  /* Tier 4 — sexual / NSFW */
-  'rape','raping','rapist',
-  'molest','molested','molester',
-  'porn','porno','pornography',
-  'sex','sexy','sexting',        // context-allowed but filtered for safety
-  'nude','nudes','naked',
-  'boobs','boob','tits','tit',
+  'kike','kikes','spic','spics','chink','chinks','gook','gooks','tranny','trannies','dyke','dykes',
+  'kill yourself','kys','end yourself','go die','should die','hang yourself','slit your',
+  'rape','raping','rapist','molest','molested','molester','porn','porno','pornography',
+  'sex','sexy','sexting','nude','nudes','naked','boobs','boob','tits','tit'
 ];
 
-/* Normalise leet-speak before matching */
 function normaliseLeet(str) {
   return str.toLowerCase()
-    .replace(/4|@/g, 'a')
-    .replace(/3/g, 'e')
-    .replace(/1|!|\|/g, 'i')
-    .replace(/0/g, 'o')
-    .replace(/5|\$/g, 's')
-    .replace(/7/g, 't')
-    .replace(/\+/g, 't')
-    .replace(/8/g, 'b')
-    .replace(/9/g, 'g')
-    .replace(/\s+/g, ' ')
-    .trim();
+    .replace(/4|@/g, 'a').replace(/3/g, 'e').replace(/1|!|\|/g, 'i')
+    .replace(/0/g, 'o').replace(/5|\$/g, 's').replace(/7/g, 't')
+    .replace(/\+/g, 't').replace(/8/g, 'b').replace(/9/g, 'g')
+    .replace(/\s+/g, ' ').trim();
 }
 
-/**
- * Returns { clean: true } if safe, or { clean: false, reason: string }
- */
 function filterContent(text) {
   const raw        = text.toLowerCase();
   const normalised = normaliseLeet(text);
@@ -107,11 +77,7 @@ function filterContent(text) {
     const w   = word.toLowerCase();
     const wRe = new RegExp('\\b' + w.replace(/\s+/g, '\\s+') + '\\b', 'i');
 
-    if (
-      wRe.test(raw)             ||   // plain text match
-      wRe.test(normalised)      ||   // leet-normalised
-      compact.includes(w.replace(/\s+/g,''))  // compact check
-    ) {
+    if (wRe.test(raw) || wRe.test(normalised) || compact.includes(w.replace(/\s+/g,''))) {
       return { clean: false, reason: 'inappropriate language' };
     }
   }
@@ -119,7 +85,9 @@ function filterContent(text) {
 }
 
 /* ── Simple in-memory rate limiter (5 posts / 10 min / IP) ─ */
-const RATE_WINDOW_MS  = 10 * 60 * 1000;   // 10 minutes
+// Note: In Vercel, this resets per serverless instance cold-boot.
+// For true edge rate limiting, you would use Vercel KV or Upstash.
+const RATE_WINDOW_MS  = 10 * 60 * 1000;
 const RATE_MAX_POSTS  = 5;
 const rateLimitMap    = new Map();
 
@@ -138,9 +106,8 @@ function checkRateLimit(ip) {
 /* ── Middleware ──────────────────────────────────────────── */
 app.use(cors({ origin: '*' }));
 app.use(express.json({ limit: '10kb' }));
-app.use(express.static(path.join(__dirname)));   // serve index.html
+app.use(express.static(path.join(__dirname)));
 
-/* ── Helper: get client IP ──────────────────────────────── */
 function getIP(req) {
   return (
     req.headers['x-forwarded-for']?.split(',')[0]?.trim() ||
@@ -153,72 +120,41 @@ function getIP(req) {
    ROUTES
 ════════════════════════════════════════════════════════════ */
 
-/* POST /api/stories — submit a new story */
-app.post('/api/stories', (req, res) => {
+app.post('/api/stories', async (req, res) => {
   const ip = getIP(req);
-
-  /* Rate limit */
   if (!checkRateLimit(ip)) {
-    return res.status(429).json({
-      error: '🌸 Slow down! You can share up to 5 stories every 10 minutes.'
-    });
+    return res.status(429).json({ error: '🌸 Slow down! You can share up to 5 stories every 10 minutes.' });
   }
 
   const { feeling, text } = req.body || {};
-
-  /* Basic validation */
-  if (!feeling || typeof feeling !== 'string') {
-    return res.status(400).json({ error: 'Please select how you are feeling.' });
-  }
-  if (!text || typeof text !== 'string') {
-    return res.status(400).json({ error: 'Please write your story.' });
-  }
+  if (!feeling || typeof feeling !== 'string') return res.status(400).json({ error: 'Please select how you are feeling.' });
+  if (!text || typeof text !== 'string') return res.status(400).json({ error: 'Please write your story.' });
 
   const trimmed = text.trim();
+  if (trimmed.length < 8) return res.status(400).json({ error: 'Your story is too short — say a little more 🌱' });
+  if (trimmed.length > 280) return res.status(400).json({ error: 'Please keep your story under 280 characters.' });
 
-  if (trimmed.length < 8) {
-    return res.status(400).json({ error: 'Your story is too short — say a little more 🌱' });
-  }
-  if (trimmed.length > 280) {
-    return res.status(400).json({ error: 'Please keep your story under 280 characters.' });
-  }
-
-  /* Bad-word filter */
   const filter = filterContent(trimmed);
   if (!filter.clean) {
-    return res.status(422).json({
-      error: '🌸 Please keep it kind — this is a safe space. Your message contains inappropriate language.'
-    });
+    return res.status(422).json({ error: '🌸 Please keep it kind — this is a safe space. Your message contains inappropriate language.' });
   }
 
-  /* Allowed feelings */
-  const emojiMap = {
-    anxious:     '😰',
-    lonely:      '😔',
-    'burned-out':'🥱',
-    angry:       '😤',
-    hopeful:     '🌱',
-    okay:        '😊',
-  };
-  if (!emojiMap[feeling]) {
-    return res.status(400).json({ error: 'Invalid feeling selection.' });
-  }
+  const emojiMap = { anxious:'😰', lonely:'😔', 'burned-out':'🥱', angry:'😤', hopeful:'🌱', okay:'😊' };
+  if (!emojiMap[feeling]) return res.status(400).json({ error: 'Invalid feeling selection.' });
 
   const colors = ['sn-y','sn-m','sn-l','sn-p','sn-b','sn-k'];
   const color  = colors[Math.floor(Math.random() * colors.length)];
   const emoji  = emojiMap[feeling];
 
-  /* Insert */
   try {
-    const stmt   = db.prepare(
-      'INSERT INTO stories (feeling, text, emoji, sticker_color) VALUES (?, ?, ?, ?)'
-    );
-    const result = stmt.run(feeling, trimmed, emoji, color);
-    const story  = db.prepare('SELECT * FROM stories WHERE id = ?').get(result.lastInsertRowid);
+    const result = await sql`
+      INSERT INTO stories (feeling, text, emoji, sticker_color) 
+      VALUES (${feeling}, ${trimmed}, ${emoji}, ${color}) 
+      RETURNING *;
+    `;
+    const story = result[0];
     
-    /* 🔴 Emit real-time event to all connected clients! */
-    io.emit('new_story', story);
-    
+    // Instead of WebSockets, clients will poll GET /api/stories
     return res.status(201).json({ success: true, story });
   } catch (err) {
     console.error('DB insert error:', err);
@@ -226,12 +162,9 @@ app.post('/api/stories', (req, res) => {
   }
 });
 
-/* GET /api/stories — fetch latest 60 stories */
-app.get('/api/stories', (_req, res) => {
+app.get('/api/stories', async (_req, res) => {
   try {
-    const stories = db
-      .prepare('SELECT * FROM stories ORDER BY created_at DESC LIMIT 60')
-      .all();
+    const stories = await sql`SELECT * FROM stories ORDER BY created_at DESC LIMIT 60`;
     return res.json(stories);
   } catch (err) {
     console.error('DB read error:', err);
@@ -239,29 +172,24 @@ app.get('/api/stories', (_req, res) => {
   }
 });
 
-/* GET /api/stories/count */
-app.get('/api/stories/count', (_req, res) => {
+app.get('/api/stories/count', async (_req, res) => {
   try {
-    const row = db.prepare('SELECT COUNT(*) as total FROM stories').get();
-    return res.json({ total: row.total });
+    const result = await sql`SELECT COUNT(*) as total FROM stories`;
+    return res.json({ total: parseInt(result[0].total) });
   } catch (err) {
     return res.status(500).json({ error: 'Could not count stories.' });
   }
 });
 
-/* ── WebSockets ──────────────────────────────────────────── */
-io.on('connection', (socket) => {
-  console.log(`[Socket] A user connected: ${socket.id}`);
-  socket.on('disconnect', () => {
-    console.log(`[Socket] User disconnected: ${socket.id}`);
+/* ── Start / Export ──────────────────────────────────────── */
+if (require.main === module) {
+  app.listen(PORT, () => {
+    console.log('');
+    console.log('  🌸 MindBloom Story Wall Backend (Vercel Ready)');
+    console.log(`  ✅ Server running at http://localhost:${PORT}`);
+    console.log('');
   });
-});
+}
 
-/* ── Start ───────────────────────────────────────────────── */
-server.listen(PORT, () => {
-  console.log('');
-  console.log('  🌸 MindBloom Story Wall Backend (with WebSockets)');
-  console.log(`  ✅ Server running at http://localhost:${PORT}`);
-  console.log(`  📂 Open: http://localhost:${PORT}/index.html`);
-  console.log('');
-});
+// Export for Vercel Serverless Functions
+module.exports = app;

@@ -8,8 +8,13 @@
     "dev": "node server.js"
   },
   "dependencies": {
+    "@neondatabase/serverless": "^1.1.0",
+    "@vercel/postgres": "^0.10.0",
     "cors": "^2.8.6",
-    "express": "^4.22.2",
-    "socket.io": "^4.8.3"
+    "dotenv": "^17.4.2",
+    "express": "^4.22.2"
+  },
+  "engines": {
+    "node": ">=22.5.0"
   }
 }

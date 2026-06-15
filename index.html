@@ -2340,24 +2340,31 @@
 
   loadStories();
 
-  /* ── Real-time WebSockets ────────────────────────────────── */
-  try {
-    const socket = io();
-    socket.on('new_story', (story) => {
-      // If we already have it (e.g., we submitted it), ignore
-      if (document.querySelector(`.sticker-note[data-id="${story.id}"]`)) return;
+  /* ── Real-time Polling (Vercel Serverless Friendly) ──────── */
+  setInterval(async () => {
+    try {
+      const res = await fetch(`${API}/stories`);
+      if (!res.ok) return;
+      const stories = await res.json();
       
-      const note = buildSticker(story);
-      animateIn(note, true);
+      let newAdded = false;
+      // Reverse so oldest of the new ones are added first
+      for (const story of stories.reverse()) {
+        if (!document.querySelector(`.sticker-note[data-id="${story.id}"]`)) {
+          const note = buildSticker(story);
+          animateIn(note, true);
+          newAdded = true;
+        }
+      }
       
-      const cur = parseInt(countBadge.textContent) || 0;
-      const newCount = cur + 1;
-      countBadge.textContent = `${newCount} voice${newCount !== 1 ? 's' : ''}`;
-      countBadge.style.display = 'inline-block';
-    });
-  } catch (err) {
-    console.warn('Socket.io not loaded or failed to connect', err);
-  }
+      if (newAdded) {
+        countBadge.textContent = `${stories.length} voice${stories.length !== 1 ? 's' : ''}`;
+        countBadge.style.display = 'inline-block';
+      }
+    } catch (err) {
+      // silent fail for polling
+    }
+  }, 5000);
 
   /* ── Character counter ───────────────────────────────────── */
   ta.addEventListener('input', () => { cc.textContent = ta.value.length + ' / 280'; });
