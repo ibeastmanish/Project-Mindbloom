@@ -1039,23 +1039,13 @@
       background: var(--gingham-bg);
       opacity: 0.15;
     }
-    /* Large decorative flower in background */
-    .vision-section-flower {
-      position: absolute;
-      top: -100px;
-      right: -100px;
-      font-size: 400px;
-      opacity: 0.03;
-      transform: rotate(15deg);
-      pointer-events: none;
-      filter: blur(4px);
-    }
     .vision-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
       min-height: 560px;
       position: relative;
       z-index: 2;
+      align-items: center;
     }
     .vision-left {
       padding: 100px 64px 100px 48px;
@@ -1064,15 +1054,6 @@
       justify-content: center;
       gap: 28px;
       position: relative;
-    }
-    .vision-left::after {
-      content: '';
-      position: absolute;
-      right: 0;
-      top: 15%;
-      height: 70%;
-      width: 1px;
-      background: linear-gradient(to bottom, transparent, rgba(255,255,255,0.15), transparent);
     }
     .vision-quote-red {
       font-family: var(--font-serif);
@@ -1114,89 +1095,91 @@
       font-style: italic;
     }
     .vision-right {
-      padding: 80px 48px 80px 56px;
+      margin: 64px 32px 64px 0;
+      padding: 56px 48px;
       display: flex;
       flex-direction: column;
       gap: 16px;
       justify-content: center;
+      background: var(--cream);
+      border-radius: 24px;
+      box-shadow: 0 24px 64px rgba(0,0,0,0.3);
+      position: relative;
+      overflow: hidden;
+    }
+    .vision-right::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image: url('images/floral-bg.jpeg');
+      background-size: 280px; /* scales the floral pattern nicely */
+      mix-blend-mode: multiply; /* removes the white background, keeping only flowers */
+      opacity: 0.45; /* less opacity as requested */
+      z-index: 0;
+      pointer-events: none;
     }
     .vision-right-label {
       font-size: 0.75rem;
       font-weight: 800;
       letter-spacing: 0.25em;
       text-transform: uppercase;
-      color: rgba(255,255,255,0.5);
+      color: var(--red);
       margin-bottom: 12px;
       font-family: var(--font-body);
       display: flex;
       align-items: center;
       gap: 8px;
+      position: relative;
+      z-index: 1;
     }
     .vision-right-label::after {
       content: '';
       flex: 1;
       height: 1px;
-      background: linear-gradient(90deg, rgba(255,255,255,0.1), transparent);
+      background: linear-gradient(90deg, rgba(184,50,50,0.2), transparent);
     }
     .pillar {
       display: flex;
-      align-items: center;
-      gap: 20px;
+      flex-direction: column;
+      gap: 6px;
       padding: 20px 24px;
       border-radius: 16px;
-      background: rgba(255, 255, 255, 0.03);
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
-      border: 1px solid rgba(255, 255, 255, 0.06);
-      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+      background: rgba(255, 255, 255, 0.7);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.9);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.04);
       transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-      cursor: default;
       position: relative;
+      z-index: 1;
       overflow: hidden;
     }
     .pillar::before {
       content: '';
       position: absolute;
       top: 0; left: 0; width: 4px; height: 100%;
-      background: #ff7b7b;
+      background: var(--red-light);
       opacity: 0;
       transition: opacity 0.3s ease;
-      box-shadow: 0 0 12px #ff7b7b;
     }
     .pillar:hover {
-      background: rgba(255, 255, 255, 0.06);
-      transform: translateY(-4px) scale(1.01);
-      box-shadow: 0 16px 48px rgba(0, 0, 0, 0.15);
-      border: 1px solid rgba(255, 255, 255, 0.15);
+      background: rgba(255, 255, 255, 0.95);
+      transform: translateY(-3px) scale(1.01);
+      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.08);
     }
     .pillar:hover::before {
       opacity: 1;
     }
-    .p-icon {
-      width: 54px; height: 54px;
-      border-radius: 14px;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 1.8rem; flex-shrink: 0;
-      background: linear-gradient(135deg, rgba(255,255,255,0.1), rgba(255,255,255,0.02));
-      border: 1px solid rgba(255,255,255,0.1);
-      box-shadow: inset 0 2px 10px rgba(255,255,255,0.05);
-      text-shadow: 0 2px 8px rgba(0,0,0,0.2);
-      transition: transform 0.4s cubic-bezier(0.34,1.56,0.64,1);
-    }
-    .pillar:hover .p-icon {
-      transform: scale(1.15) rotate(5deg);
-    }
     .pillar h4 { 
       font-family: var(--font-serif); 
-      font-weight: 700; 
-      font-size: 1.1rem; 
-      color: #ffffff; 
-      margin-bottom: 6px;
+      font-weight: 800; 
+      font-size: 1.15rem; 
+      color: var(--navy-dark); 
       letter-spacing: 0.02em;
     }
     .pillar p { 
-      font-size: 0.85rem; 
-      color: rgba(255, 255, 255, 0.65); 
+      font-size: 0.9rem; 
+      color: rgba(42, 31, 20, 0.75); 
       line-height: 1.5; 
       font-family: var(--font-body);
     }
@@ -2103,7 +2086,6 @@
      VISION SECTION
 ============================================================ -->
 <section class="vision-section" aria-labelledby="vision-h2">
-  <div class="vision-section-flower" aria-hidden="true">🌸</div>
   <div class="vision-grid wrap" style="max-width:var(--max-w);padding:0 32px;">
     <div class="vision-left fade-up">
       <p style="font-size:0.75rem;font-weight:800;letter-spacing:0.25em;text-transform:uppercase;color:rgba(255,255,255,0.5);">Vision &amp; Impact</p>
@@ -2121,11 +2103,11 @@
     </div>
     <div class="vision-right fade-up" style="transition-delay:0.1s;">
       <p class="vision-right-label">What Makes Us Different</p>
-      <div class="pillar"><div class="p-icon" aria-hidden="true">🌸</div><div><h4>By Youth, For Youth</h4><p>Student volunteers leading every team — design, events, content, outreach</p></div></div>
-      <div class="pillar"><div class="p-icon" aria-hidden="true">🌻</div><div><h4>Empathy First, Always</h4><p>Not clinical. Not intimidating. Warm, safe, and human above all else.</p></div></div>
-      <div class="pillar"><div class="p-icon" aria-hidden="true">🌺</div><div><h4>Creativity as Healing</h4><p>Art, writing, music, football — every form of expression is welcome</p></div></div>
-      <div class="pillar"><div class="p-icon" aria-hidden="true">🌼</div><div><h4>Football × Mental Health</h4><p>Partnering with Pune Ballers for MindBloom on the Pitch campaigns</p></div></div>
-      <div class="pillar"><div class="p-icon" aria-hidden="true">🌹</div><div><h4>Growth, Not Perfection</h4><p>Healing looks different for everyone. We meet you where you are.</p></div></div>
+      <div class="pillar"><h4>By Youth, For Youth</h4><p>Student volunteers leading every team — design, events, content, outreach.</p></div>
+      <div class="pillar"><h4>Empathy First, Always</h4><p>Not clinical. Not intimidating. Warm, safe, and human above all else.</p></div>
+      <div class="pillar"><h4>Creativity as Healing</h4><p>Art, writing, music, football — every form of expression is welcome.</p></div>
+      <div class="pillar"><h4>Football × Mental Health</h4><p>Partnering with Pune Ballers for MindBloom on the Pitch campaigns.</p></div>
+      <div class="pillar"><h4>Growth, Not Perfection</h4><p>Healing looks different for everyone. We meet you where you are.</p></div>
     </div>
   </div>
 </section>
