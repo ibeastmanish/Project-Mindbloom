@@ -2094,7 +2094,7 @@
 
 /* Story Wall — API-connected ────────────────────────────── */
 (function () {
-  const API      = 'http://localhost:3001/api';
+  const API      = '/api';
   const form     = document.getElementById('story-form');
   const ta       = document.getElementById('story-text');
   const cc       = document.getElementById('char-count');
@@ -2199,7 +2199,7 @@
 
   /* ── Real-time WebSockets ────────────────────────────────── */
   try {
-    const socket = io(API);
+    const socket = io();
     socket.on('new_story', (story) => {
       // If we already have it (e.g., we submitted it), ignore
       if (document.querySelector(`.sticker-note[data-id="${story.id}"]`)) return;
