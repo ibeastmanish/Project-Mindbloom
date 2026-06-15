@@ -1322,35 +1322,7 @@
     /* ============================================================
        RESPONSIVE
     ============================================================ */
-    @media (max-width: 1024px) {
-      .hero-inner, .story-grid, .vision-grid, .footer-grid { grid-template-columns: 1fr; }
-      .hero-right { display: none; }
-      .vision-left { border-right: none; padding: 72px 0; }
-      .vision-right { padding: 48px 0; }
-      .bento { grid-template-columns: 1fr 1fr; }
-      .bento-wide { grid-column: span 2; }
-      .cal-grid { grid-template-columns: 1fr; }
-      .cal-sidebar { border-right: none; border-bottom: 2px solid rgba(255,255,255,0.1); }
-    }
-    @media (max-width: 768px) {
-      .wrap { padding: 0 20px; }
-      .nav-bar { padding: 0 20px; }
-      .nav-links { display: none; }
-      .nav-hbg { display: flex; }
-      .bento { grid-template-columns: 1fr; }
-      .bento-wide { grid-column: span 1; }
-      .sticker-grid { grid-template-columns: 1fr; }
-      .join-h-red { font-size: 3rem; }
-      .hero-h1-red { font-size: 2.6rem; }
-      .hero-h1-script { font-size: 2rem; }
-    }
-    @media (prefers-reduced-motion: reduce) {
-      .marquee-track { animation: none; }
-      .logo-bloom { animation: none; }
-      .mega-deco { animation: none; }
-      .star-deco { animation: none; }
-    }
-    }
+
 
     /* Meet Team */
     .meet-team {
@@ -1477,6 +1449,49 @@
       mix-blend-mode: overlay;
       border-left: 2px dashed rgba(0,0,0,0.1);
       border-right: 2px dashed rgba(0,0,0,0.1);
+    }
+    /* ============================================================
+       RESPONSIVE FIXES (Moved to bottom)
+    ============================================================ */
+    @media (max-width: 1024px) {
+      .hero-inner, .story-grid, .vision-grid, .footer-grid { grid-template-columns: 1fr; }
+      .vision-left { border-right: none; padding: 72px 0; }
+      .vision-right { padding: 48px 0; }
+      .bento { grid-template-columns: 1fr 1fr; }
+      .bento-wide { grid-column: span 2; }
+      .cal-grid { grid-template-columns: 1fr; }
+      .cal-sidebar { border-right: none; border-bottom: 2px solid rgba(255,255,255,0.1); }
+    }
+    @media (max-width: 768px) {
+      .wrap { padding: 0 20px; }
+      .nav-bar { padding: 0 20px; }
+      .nav-links { display: none; }
+      .nav-hbg { display: flex; }
+      .bento { grid-template-columns: 1fr; }
+      .bento-wide { grid-column: span 1; }
+      .sticker-grid { grid-template-columns: 1fr; }
+      
+      /* Typography Scaling */
+      .join-h-red { font-size: clamp(2rem, 8vw, 3rem); }
+      .hero-h1-red { font-size: clamp(2.2rem, 8vw, 2.6rem); }
+      .hero-h1-script { font-size: clamp(1.5rem, 6vw, 2rem); }
+      
+      /* Component Flexibility */
+      .meet-card, .team-photo-card { max-width: 100%; margin-left: auto; margin-right: auto; }
+      
+      /* Footer */
+      .footer-bottom { 
+        flex-direction: column !important; 
+        justify-content: center !important; 
+        text-align: center; 
+        gap: 24px !important; 
+      }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .marquee-track { animation: none; }
+      .logo-bloom { animation: none; }
+      .mega-deco { animation: none; }
+      .star-deco { animation: none; }
     }
   </style>
 </head>
