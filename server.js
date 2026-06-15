@@ -12,7 +12,8 @@ const app  = express();
 const PORT = process.env.PORT || 3001;
 
 // Initialize Neon SQL
-const sql = neon(process.env.DATABASE_URL || 'postgres://dummy');
+const connectionString = process.env.DATABASE_URL || process.env.POSTGRES_URL || 'postgresql://user:password@host.tld/dbname';
+const sql = neon(connectionString);
 
 /* ── Database Init ───────────────────────────────────────── */
 async function initDB() {
@@ -161,7 +162,7 @@ app.post('/api/stories', async (req, res) => {
     return res.status(201).json({ success: true, story });
   } catch (err) {
     console.error('DB insert error:', err);
-    return res.status(500).json({ error: 'Something went wrong. Please try again.' });
+    return res.status(500).json({ error: 'DB insert error: ' + err.message });
   }
 });
 
@@ -171,7 +172,7 @@ app.get('/api/stories', async (_req, res) => {
     return res.json(stories);
   } catch (err) {
     console.error('DB read error:', err);
-    return res.status(500).json({ error: 'Could not load stories.' });
+    return res.status(500).json({ error: 'DB read error: ' + err.message });
   }
 });
 
