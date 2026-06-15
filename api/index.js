@@ -36,8 +36,7 @@ async function initDB() {
     console.error('DB Init error (make sure DATABASE_URL is set):', err);
   }
 }
-// Vercel Serverless functions can execute this on cold start
-initDB();
+// Removed floating initDB() to prevent Vercel Serverless cold-boot crashes
 
 /* ── Bad-word list (server-side, English + common slang) ── */
 const BAD_WORDS = [
@@ -129,6 +128,7 @@ function getIP(req) {
 ════════════════════════════════════════════════════════════ */
 
 app.post('/api/stories', async (req, res) => {
+  await initDB(); // Ensure DB is ready within request context
   const ip = getIP(req);
   if (!checkRateLimit(ip)) {
     return res.status(429).json({ error: '🌸 Slow down! You can share up to 5 stories every 10 minutes.' });
@@ -171,6 +171,7 @@ app.post('/api/stories', async (req, res) => {
 });
 
 app.get('/api/stories', async (_req, res) => {
+  await initDB(); // Ensure DB is ready within request context
   try {
     const stories = await sql`SELECT * FROM stories ORDER BY created_at DESC LIMIT 60`;
     return res.json(stories);
