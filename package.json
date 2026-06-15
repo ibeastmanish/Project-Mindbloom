@@ -2,10 +2,10 @@
   "name": "mindbloom-backend",
   "version": "1.0.0",
   "description": "MindBloom Youth Mental Health — Story Wall Backend",
-  "main": "server.js",
+  "main": "api/index.js",
   "scripts": {
-    "start": "node server.js",
-    "dev": "node server.js"
+    "start": "node api/index.js",
+    "dev": "node api/index.js"
   },
   "dependencies": {
     "@neondatabase/serverless": "^1.1.0",
