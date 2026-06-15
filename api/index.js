@@ -17,6 +17,10 @@ const sql = neon(connectionString);
 
 /* ── Database Init ───────────────────────────────────────── */
 async function initDB() {
+  if (connectionString.includes('host.tld')) {
+    console.error('Skipping initDB: No valid DATABASE_URL provided by Vercel.');
+    return;
+  }
   try {
     await sql`
       CREATE TABLE IF NOT EXISTS stories (
@@ -184,16 +188,6 @@ app.get('/api/stories/count', async (_req, res) => {
     return res.status(500).json({ error: 'Could not count stories.' });
   }
 });
-
-/* ── Start / Export ──────────────────────────────────────── */
-if (require.main === module) {
-  app.listen(PORT, () => {
-    console.log('');
-    console.log('  🌸 MindBloom Story Wall Backend (Vercel Ready)');
-    console.log(`  ✅ Server running at http://localhost:${PORT}`);
-    console.log('');
-  });
-}
 
 // Export for Vercel Serverless Functions
 module.exports = app;
