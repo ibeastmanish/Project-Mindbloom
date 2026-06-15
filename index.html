@@ -1352,6 +1352,73 @@
     }
     }
 
+    /* Team Gallery */
+    .team-gallery {
+      padding: 80px 20px;
+      position: relative;
+      background: var(--denim-light);
+      overflow: hidden;
+      border-top: 1.5px dashed rgba(255,255,255,0.2);
+      border-bottom: 1.5px dashed rgba(255,255,255,0.2);
+    }
+    .team-title {
+      text-align: center;
+      font-family: var(--font-serif);
+      font-weight: 900;
+      font-size: clamp(2rem, 4vw, 3.2rem);
+      color: var(--navy);
+      margin-bottom: 50px;
+      text-shadow: 1px 2px 0 rgba(255,255,255,0.3);
+    }
+    .team-title span {
+      font-family: var(--font-script);
+      color: var(--red);
+      font-weight: normal;
+      font-size: 1.3em;
+    }
+    .team-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 30px;
+      justify-content: center;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+    .team-photo-card {
+      background: var(--cream);
+      padding: 12px 12px 36px 12px;
+      box-shadow: 4px 6px 16px rgba(0,0,0,0.15);
+      border-radius: 2px;
+      position: relative;
+      width: 260px;
+      transition: transform 0.4s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.4s;
+    }
+    .team-photo-card:hover {
+      transform: scale(1.08) rotate(0deg) !important;
+      box-shadow: 8px 16px 32px rgba(0,0,0,0.3);
+      z-index: 20;
+    }
+    .team-photo-card img {
+      width: 100%;
+      height: 240px;
+      object-fit: cover;
+      background: #eee;
+      border: 1px solid rgba(0,0,0,0.05);
+      border-radius: 1px;
+    }
+    .team-tape {
+      position: absolute;
+      top: -12px;
+      left: 50%;
+      width: 90px;
+      height: 28px;
+      background: rgba(255,255,255,0.7);
+      border: 1px solid rgba(0,0,0,0.05);
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+      mix-blend-mode: overlay;
+      border-left: 2px dashed rgba(0,0,0,0.1);
+      border-right: 2px dashed rgba(0,0,0,0.1);
+    }
   </style>
 </head>
 <body>
@@ -1872,6 +1939,36 @@
   </div>
 </section>
 
+<!-- ============================================================
+     TEAM GALLERY
+============================================================= -->
+<section class="team-gallery" id="team">
+  <div class="wrap">
+    <h2 class="team-title fade-up">The <span>faces</span> behind MindBloom</h2>
+    <div class="team-grid">
+      <div class="team-photo-card fade-up" style="transform: rotate(-3deg); transition-delay: 0.1s;">
+        <div class="team-tape" style="transform: translateX(-50%) rotate(2deg);"></div>
+        <img src="images/team/team1.jpg" alt="MindBloom Team" loading="lazy" />
+      </div>
+      <div class="team-photo-card fade-up" style="transform: rotate(4deg); transition-delay: 0.2s; margin-top: 20px;">
+        <div class="team-tape" style="transform: translateX(-50%) rotate(-1deg);"></div>
+        <img src="images/team/team2.jpg" alt="MindBloom Team" loading="lazy" />
+      </div>
+      <div class="team-photo-card fade-up" style="transform: rotate(-2deg); transition-delay: 0.3s; margin-top: -10px;">
+        <div class="team-tape" style="transform: translateX(-50%) rotate(-3deg);"></div>
+        <img src="images/team/team3.jpg" alt="MindBloom Team" loading="lazy" />
+      </div>
+      <div class="team-photo-card fade-up" style="transform: rotate(5deg); transition-delay: 0.4s; margin-top: 30px;">
+        <div class="team-tape" style="transform: translateX(-50%) rotate(1deg);"></div>
+        <img src="images/team/team4.jpg" alt="MindBloom Team" loading="lazy" />
+      </div>
+      <div class="team-photo-card fade-up" style="transform: rotate(-4deg); transition-delay: 0.5s;">
+        <div class="team-tape" style="transform: translateX(-50%) rotate(-2deg);"></div>
+        <img src="images/team/team5.jpg" alt="MindBloom Team" loading="lazy" />
+      </div>
+    </div>
+  </div>
+</section>
 
 <!-- ============================================================
      FOOTER
