@@ -2040,6 +2040,7 @@
       ? new Date(story.created_at).toLocaleDateString('en-IN', { day:'numeric', month:'short' })
       : '';
     note.innerHTML =
+      `<div class="pin" aria-hidden="true" style="position:absolute;top:-12px;left:50%;transform:translateX(-50%);font-size:1.4rem;">📌</div>` +
       `<span class="s-emoji">${story.emoji || '🌸'}</span>` +
       `"${story.text}"` +
       (time ? `<span style="display:block;font-size:0.6rem;opacity:0.4;margin-top:6px;">${time}</span>` : '');
@@ -2095,6 +2096,25 @@
   }
 
   loadStories();
+
+  /* ── Real-time WebSockets ────────────────────────────────── */
+  try {
+    const socket = io(API);
+    socket.on('new_story', (story) => {
+      // If we already have it (e.g., we submitted it), ignore
+      if (document.querySelector(`.sticker-note[data-id="${story.id}"]`)) return;
+      
+      const note = buildSticker(story);
+      animateIn(note, true);
+      
+      const cur = parseInt(countBadge.textContent) || 0;
+      const newCount = cur + 1;
+      countBadge.textContent = `${newCount} voice${newCount !== 1 ? 's' : ''}`;
+      countBadge.style.display = 'inline-block';
+    });
+  } catch (err) {
+    console.warn('Socket.io not loaded or failed to connect', err);
+  }
 
   /* ── Character counter ───────────────────────────────────── */
   ta.addEventListener('input', () => { cc.textContent = ta.value.length + ' / 280'; });

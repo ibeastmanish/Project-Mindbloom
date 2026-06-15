@@ -1,18 +1,22 @@
 /**
  * MindBloom — Story Wall Backend
- * Express + SQLite | Bad-word filter | Rate limiting
+ * Express + SQLite | Bad-word filter | Rate limiting | Real-time WebSockets
  */
 
 const express  = require('express');
-const Database = require('better-sqlite3');
+const http     = require('http');
+const { Server } = require('socket.io');
+const { DatabaseSync } = require('node:sqlite');
 const cors     = require('cors');
 const path     = require('path');
 
 const app  = express();
+const server = http.createServer(app);
+const io = new Server(server, { cors: { origin: '*' } });
 const PORT = 3001;
 
 /* ── Database ────────────────────────────────────────────── */
-const db = new Database(path.join(__dirname, 'mindbloom.db'));
+const db = new DatabaseSync(path.join(__dirname, 'mindbloom.db'));
 
 db.exec(`
   CREATE TABLE IF NOT EXISTS stories (
@@ -62,7 +66,6 @@ const BAD_WORDS = [
   'gook','gooks',
   'tranny','trannies',
   'dyke','dykes',
-  'fag',
   /* Tier 3 — self-harm / dangerous content */
   'kill yourself','kys','end yourself',
   'go die','should die',
@@ -74,7 +77,6 @@ const BAD_WORDS = [
   'sex','sexy','sexting',        // context-allowed but filtered for safety
   'nude','nudes','naked',
   'boobs','boob','tits','tit',
-  /* Leet / obfuscated variants handled below via normalizer */
 ];
 
 /* Normalise leet-speak before matching */
@@ -99,7 +101,6 @@ function normaliseLeet(str) {
 function filterContent(text) {
   const raw        = text.toLowerCase();
   const normalised = normaliseLeet(text);
-  // also strip non-alphanumeric gaps (f**k → fk catch)
   const compact    = raw.replace(/[^a-z0-9]/g, '');
 
   for (const word of BAD_WORDS) {
@@ -214,6 +215,10 @@ app.post('/api/stories', (req, res) => {
     );
     const result = stmt.run(feeling, trimmed, emoji, color);
     const story  = db.prepare('SELECT * FROM stories WHERE id = ?').get(result.lastInsertRowid);
+    
+    /* 🔴 Emit real-time event to all connected clients! */
+    io.emit('new_story', story);
+    
     return res.status(201).json({ success: true, story });
   } catch (err) {
     console.error('DB insert error:', err);
@@ -244,10 +249,18 @@ app.get('/api/stories/count', (_req, res) => {
   }
 });
 
+/* ── WebSockets ──────────────────────────────────────────── */
+io.on('connection', (socket) => {
+  console.log(`[Socket] A user connected: ${socket.id}`);
+  socket.on('disconnect', () => {
+    console.log(`[Socket] User disconnected: ${socket.id}`);
+  });
+});
+
 /* ── Start ───────────────────────────────────────────────── */
-app.listen(PORT, () => {
+server.listen(PORT, () => {
   console.log('');
-  console.log('  🌸 MindBloom Story Wall Backend');
+  console.log('  🌸 MindBloom Story Wall Backend (with WebSockets)');
   console.log(`  ✅ Server running at http://localhost:${PORT}`);
   console.log(`  📂 Open: http://localhost:${PORT}/index.html`);
   console.log('');
