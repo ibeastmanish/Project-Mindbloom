@@ -4,12 +4,15 @@
  */
 require('dotenv').config();
 const express  = require('express');
-const { sql }  = require('@neondatabase/serverless');
+const { neon } = require('@neondatabase/serverless');
 const cors     = require('cors');
 const path     = require('path');
 
 const app  = express();
 const PORT = process.env.PORT || 3001;
+
+// Initialize Neon SQL
+const sql = neon(process.env.DATABASE_URL || 'postgres://dummy');
 
 /* ── Database Init ───────────────────────────────────────── */
 async function initDB() {
