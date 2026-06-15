@@ -955,6 +955,43 @@
       grid-template-columns: 1fr 1fr;
       gap: 12px;
     }
+
+    /* ── Liquid-glass container for Community Wall ──────────── */
+    .wall-glass {
+      position: relative;
+      background: rgba(255, 255, 255, 0.22);
+      backdrop-filter: blur(16px) saturate(180%) brightness(1.05);
+      -webkit-backdrop-filter: blur(16px) saturate(180%) brightness(1.05);
+      border: 1px solid rgba(255, 255, 255, 0.38);
+      border-radius: 16px;
+      box-shadow:
+        0 8px 32px rgba(107, 139, 174, 0.18),
+        0 1.5px 0 rgba(255,255,255,0.55) inset,
+        0 -1px 0 rgba(200,169,122,0.12) inset;
+      padding: 18px;
+      overflow: hidden;
+    }
+    /* Scroll area inside glass — shows 2 rows (~4 notes) then scrolls */
+    .wall-scroll {
+      max-height: 440px;
+      overflow-y: auto;
+      scrollbar-width: thin;
+      scrollbar-color: rgba(107,139,174,0.3) transparent;
+      padding-right: 4px;
+    }
+    .wall-scroll::-webkit-scrollbar { width: 5px; }
+    .wall-scroll::-webkit-scrollbar-track { background: transparent; }
+    .wall-scroll::-webkit-scrollbar-thumb { background: rgba(107,139,174,0.35); border-radius: 100px; }
+    /* Fade-out at bottom to hint at more content */
+    .wall-glass::after {
+      content: '';
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      height: 52px;
+      background: linear-gradient(to bottom, rgba(255,255,255,0) 0%, rgba(245,235,216,0.55) 100%);
+      border-radius: 0 0 16px 16px;
+      pointer-events: none;
+    }
     .sticker-note {
       padding: 16px 14px;
       border-radius: 2px 10px 10px 10px;
@@ -2025,7 +2062,11 @@
           <div style="height:90px;background:rgba(200,169,122,0.18);border-radius:4px;animation:shimmer 1.4s ease-in-out infinite;animation-delay:0.4s;"></div>
           <div style="height:90px;background:rgba(200,169,122,0.18);border-radius:4px;animation:shimmer 1.4s ease-in-out infinite;animation-delay:0.6s;"></div>
         </div>
-        <div class="sticker-grid" id="sticker-wall" aria-live="polite" aria-label="Anonymous community stories" style="display:none;"></div>
+        <div class="wall-glass">
+          <div class="wall-scroll">
+            <div class="sticker-grid" id="sticker-wall" aria-live="polite" aria-label="Anonymous community stories" style="display:none;"></div>
+          </div>
+        </div>
         <p id="wall-offline" style="
           display:none;
           font-size:0.82rem;
