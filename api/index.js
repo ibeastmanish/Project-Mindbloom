@@ -195,5 +195,21 @@ app.get('/api/env', (req, res) => {
   res.json({ env_keys: keys });
 });
 
+/* Admin: delete a story by ID (requires secret key header) */
+app.delete('/api/stories/:id', async (req, res) => {
+  const adminKey = req.headers['x-admin-key'];
+  if (adminKey !== (process.env.ADMIN_SECRET || 'mindbloom-admin-2024')) {
+    return res.status(403).json({ error: 'Forbidden' });
+  }
+  const id = parseInt(req.params.id, 10);
+  if (!id) return res.status(400).json({ error: 'Invalid id' });
+  try {
+    await sql`DELETE FROM stories WHERE id = ${id}`;
+    return res.json({ success: true, deleted: id });
+  } catch (err) {
+    return res.status(500).json({ error: err.message });
+  }
+});
+
 // Export for Vercel Serverless Functions
 module.exports = app;
