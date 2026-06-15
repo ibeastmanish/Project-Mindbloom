@@ -1451,41 +1451,142 @@
       border-right: 2px dashed rgba(0,0,0,0.1);
     }
     /* ============================================================
-       RESPONSIVE FIXES (Moved to bottom)
+       RESPONSIVE — Tablet (≤1024px)
     ============================================================ */
     @media (max-width: 1024px) {
-      .hero-inner, .story-grid, .vision-grid, .footer-grid { grid-template-columns: 1fr; }
-      .vision-left { border-right: none; padding: 72px 0; }
-      .vision-right { padding: 48px 0; }
+      .hero-inner { grid-template-columns: 1fr; gap: 32px; padding: 48px 0 64px; }
+      .hero-right { order: -1; justify-content: center; }
+      .hero-main-card { max-width: 420px; transform: rotate(0deg); padding: 32px 28px 28px; }
+
+      .story-grid { grid-template-columns: 1fr; gap: 36px; }
+      .form-card { transform: rotate(0deg); max-width: 560px; margin: 0 auto; }
+
+      .vision-grid { grid-template-columns: 1fr; min-height: auto; }
+      .vision-left { border-right: none; border-bottom: 1px solid rgba(255,255,255,0.07); padding: 64px 40px; }
+      .vision-right { padding: 48px 40px; }
+
+      .footer-grid { grid-template-columns: 1fr 1fr; gap: 36px; }
+
       .bento { grid-template-columns: 1fr 1fr; }
       .bento-wide { grid-column: span 2; }
+
       .cal-grid { grid-template-columns: 1fr; }
-      .cal-sidebar { border-right: none; border-bottom: 2px solid rgba(255,255,255,0.1); }
+      .cal-sidebar { border-right: none; border-bottom: 2px solid rgba(255,255,255,0.1); padding: 24px 20px; }
+      .month-list { display: flex; flex-wrap: wrap; gap: 6px; }
+      .cal-detail { padding: 32px 28px; }
     }
+
+    /* ============================================================
+       RESPONSIVE — Mobile (≤768px)
+    ============================================================ */
     @media (max-width: 768px) {
-      .wrap { padding: 0 20px; }
-      .nav-bar { padding: 0 20px; }
+      .wrap { padding: 0 16px; }
+      .nav-bar { padding: 0 16px; }
       .nav-links { display: none; }
       .nav-hbg { display: flex; }
-      .bento { grid-template-columns: 1fr; }
+
+      /* Hero */
+      .hero { padding-top: 62px; }
+      .hero-inner { gap: 24px; padding: 36px 0 48px; }
+      .hero-right { display: none; }  /* Hide the stat card on mobile to reduce clutter */
+      .hero-h1-red { font-size: clamp(2.4rem, 10vw, 3.4rem); }
+      .hero-h1-script { font-size: clamp(1.8rem, 7vw, 2.4rem); }
+      .hero-h1-serif { font-size: clamp(2rem, 8vw, 2.8rem); }
+      .hero-sub { font-size: 0.9rem; max-width: 100%; }
+      .hero-actions { flex-direction: column; gap: 10px; }
+      .hero-actions .btn-scrap { width: 100%; justify-content: center; font-size: 0.9rem; padding: 14px 20px; }
+      .hero-eyebrow { font-size: 0.68rem; }
+      .hero-corner-tl { width: 160px; height: 160px; }
+
+      /* Marquee */
+      .marquee-item { padding: 0 20px; gap: 10px; font-size: 0.65rem; }
+
+      /* What we do / Bento */
+      .what-section { padding: 56px 0 64px; }
+      .bento { grid-template-columns: 1fr; gap: 14px; margin-top: 32px; }
       .bento-wide { grid-column: span 1; }
-      .sticker-grid { grid-template-columns: 1fr; }
-      
-      /* Typography Scaling */
-      .join-h-red { font-size: clamp(2rem, 8vw, 3rem); }
-      .hero-h1-red { font-size: clamp(2.2rem, 8vw, 2.6rem); }
-      .hero-h1-script { font-size: clamp(1.5rem, 6vw, 2rem); }
-      
-      /* Component Flexibility */
-      .meet-card, .team-photo-card { max-width: 100%; margin-left: auto; margin-right: auto; }
-      
+      .bento-card { padding: 24px 20px 22px; }
+      .bento-card h3 { font-size: 1.1rem; }
+      .section-heading-red { font-size: clamp(2rem, 8vw, 3rem); }
+      .section-script { font-size: clamp(1.4rem, 6vw, 2rem); }
+
+      /* Calendar */
+      .cal-section { padding: 56px 0 64px; }
+      .cal-detail { padding: 24px 18px; min-height: auto; }
+      .cal-month-name { font-size: 2.4rem; margin-bottom: 18px; }
+      .cal-sidebar { padding: 18px 16px; }
+      .month-list { gap: 4px; }
+      .month-item { font-size: 0.78rem; padding: 8px 10px; }
+
+      /* Story Wall */
+      .story-section { padding: 56px 0 64px; }
+      .form-card { padding: 24px 20px 22px; }
+      .sticker-grid { grid-template-columns: 1fr 1fr; gap: 8px; }
+      .sticker-note { font-size: 0.78rem; padding: 12px 10px; }
+
+      /* Vision */
+      .vision-left { padding: 48px 16px; }
+      .vision-right { padding: 32px 16px; }
+      .vision-quote-red { font-size: clamp(1.5rem, 6vw, 2.2rem); }
+      .vision-quote-script { font-size: clamp(1.3rem, 5vw, 1.8rem); }
+
+      /* Join */
+      .join-section { padding: 56px 0 64px; }
+      .join-h-red { font-size: clamp(2.8rem, 12vw, 4.5rem); }
+      .join-h-script { font-size: clamp(1.6rem, 6vw, 2.4rem); }
+      .roles-row { gap: 6px; margin-bottom: 28px; }
+      .role-chip { font-size: 0.75rem; padding: 7px 14px; }
+      .join-card { padding: 24px 20px; max-width: 100%; }
+
+      /* Collabs */
+      .collab-section { padding: 64px 0; }
+      .collab-grid { grid-template-columns: 1fr 1fr; gap: 32px 16px; padding: 0 8px; }
+      .collab-item:nth-child(even) { margin-top: 0; }
+      .collab-photo { width: 120px; height: 120px; padding: 8px; border-width: 4px; }
+      .collab-name { font-size: 0.85rem; padding: 6px 12px; }
+
+      /* Meet Team */
+      .meet-team { padding: 56px 12px; }
+      .meet-grid { gap: 18px; }
+      .meet-card { width: calc(50% - 9px); min-width: 140px; padding: 14px; }
+      .meet-photo { height: 180px; }
+      .meet-name { font-size: 1.2rem; }
+      .meet-role { font-size: 0.72rem; }
+
+      /* Team Gallery */
+      .team-gallery { padding: 56px 12px; }
+      .team-grid { gap: 18px; }
+      .team-photo-card { width: calc(50% - 9px); min-width: 140px; }
+      .team-photo-card img { height: 160px; }
+
       /* Footer */
-      .footer-bottom { 
-        flex-direction: column !important; 
-        justify-content: center !important; 
-        text-align: center; 
-        gap: 24px !important; 
-      }
+      .footer-grid { grid-template-columns: 1fr; gap: 28px; }
+      .footer-inner { padding: 40px 0 28px; }
+      .footer-bottom { flex-direction: column !important; justify-content: center !important; text-align: center; gap: 16px !important; }
+      .f-brand-name { font-size: 1.6rem; }
+      .f-desc { max-width: 100%; }
+    }
+
+    /* ============================================================
+       RESPONSIVE — Small Mobile (≤480px)
+    ============================================================ */
+    @media (max-width: 480px) {
+      .hero-h1-red { font-size: 2.2rem; }
+      .hero-h1-script { font-size: 1.6rem; }
+      .hero-h1-serif { font-size: 1.9rem; }
+
+      .collab-grid { grid-template-columns: 1fr 1fr; gap: 24px 12px; }
+      .collab-photo { width: 100px; height: 100px; }
+
+      .meet-card { width: 100%; max-width: 300px; }
+      .meet-photo { height: 220px; }
+      .meet-name { font-size: 1.4rem; }
+
+      .team-photo-card { width: 100%; max-width: 300px; }
+      .team-photo-card img { height: 200px; }
+
+      .bento-card { padding: 20px 16px; }
+      .sticker-grid { grid-template-columns: 1fr; }
     }
     @media (prefers-reduced-motion: reduce) {
       .marquee-track { animation: none; }
