@@ -1,0 +1,2178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Project MindBloom — Youth Mental Health Movement</title>
+  <meta name="description" content="Project MindBloom is a youth-led mental health initiative. Safe spaces, community, and football for teens. By youth, for youth — Pune, India." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=Dancing+Script:wght@500;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet" />
+
+  <style>
+    /* ============================================================
+       MINDBLOOM SCRAPBOOK SYSTEM — Denim × Gingham × Kraft
+    ============================================================ */
+    :root {
+      --denim:        #6B8BAE;   /* crumpled blue paper */
+      --denim-dark:   #4A6A8A;
+      --denim-light:  #8FAEC8;
+      --denim-pale:   #C5D8EA;
+      --cream:        #F5EBD8;   /* warm paper / notepad */
+      --cream-dark:   #EAD9C0;
+      --kraft:        #C8A97A;   /* kraft brown edge */
+      --kraft-dark:   #A07A4A;
+      --red:          #B83232;   /* gingham red */
+      --red-light:    #D44444;
+      --red-pale:     #F0D0C8;
+      --navy:         #2C4875;   /* script navy */
+      --navy-dark:    #1A2E4F;
+      --ink:          #2A1F14;   /* warm dark ink */
+      --white:        #FEFAF5;
+      --gingham-bg:   repeating-conic-gradient(#B83232 0 25%, #F5EBD8 0 50%) 0 / 28px 28px;
+      --font-serif:   'Playfair Display', Georgia, serif;
+      --font-script:  'Dancing Script', cursive;
+      --font-body:    'Plus Jakarta Sans', sans-serif;
+      --font-classic: 'Libre Baskerville', Georgia, serif;
+    }
+
+    /* ============================================================
+       RESET & BASE
+    ============================================================ */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: var(--font-body);
+      background: var(--denim);
+      color: var(--ink);
+      overflow-x: hidden;
+      cursor: none;
+    }
+
+    /* ============================================================
+       CUSTOM CURSOR — pin-style
+    ============================================================ */
+    #cur-pin {
+      position: fixed;
+      pointer-events: none;
+      z-index: 9999;
+      transform: translate(-4px, -28px);
+      transition: transform 0.06s ease;
+      font-size: 1.4rem;
+      filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+    }
+    #cur-ring {
+      position: fixed;
+      pointer-events: none;
+      z-index: 9998;
+      width: 28px; height: 28px;
+      border-radius: 50%;
+      border: 1.5px solid rgba(184,50,50,0.4);
+      transform: translate(-50%,-50%);
+      transition: width 0.25s ease, height 0.25s ease;
+    }
+    .hover-pin #cur-ring { width: 44px; height: 44px; }
+
+    /* ============================================================
+       CRUMPLED PAPER TEXTURE via SVG filter
+    ============================================================ */
+    .paper-texture {
+      position: relative;
+    }
+    .paper-texture::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      z-index: 1;
+      opacity: 0.18;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='500' height='500'%3E%3Cfilter id='c'%3E%3CfeTurbulence type='turbulence' baseFrequency='0.02 0.04' numOctaves='6' seed='3' stitchTiles='stitch'/%3E%3CfeDisplacementMap in='SourceGraphic' scale='12'/%3E%3C/filter%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3Crect width='500' height='500' filter='url(%23c)' opacity='0.9'/%3E%3C/svg%3E");
+      background-repeat: repeat;
+      mix-blend-mode: overlay;
+    }
+
+    /* ============================================================
+       GINGHAM PATTERN ELEMENTS
+    ============================================================ */
+    .gingham {
+      background: var(--gingham-bg);
+    }
+    .gingham-border {
+      background: var(--gingham-bg);
+    }
+
+    /* ============================================================
+       LAYOUT
+    ============================================================ */
+    .wrap {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 0 32px;
+      position: relative;
+      z-index: 2;
+    }
+
+    /* fade-up */
+    .fade-up {
+      opacity: 0;
+      transform: translateY(32px);
+      transition: opacity 0.7s ease, transform 0.7s ease;
+    }
+    .fade-up.in { opacity: 1; transform: none; }
+
+    /* tilt on hover — scrapbook feel */
+    .tilt:hover { transform: rotate(-0.8deg) translateY(-4px); }
+    .tilt-r:hover { transform: rotate(0.8deg) translateY(-4px); }
+
+    /* ============================================================
+       NOTEPAD / KRAFT CARD — the core scrapbook card
+    ============================================================ */
+    .kraft-card {
+      background: var(--cream);
+      border: 3px solid var(--kraft);
+      border-radius: 4px;
+      position: relative;
+      box-shadow:
+        3px 3px 0 var(--kraft-dark),
+        6px 6px 0 rgba(0,0,0,0.12),
+        0 12px 40px rgba(0,0,0,0.18);
+      transition: transform 0.25s ease, box-shadow 0.25s ease;
+    }
+    .kraft-card::before {
+      /* lined paper top edge */
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 6px;
+      background: var(--gingham-bg);
+      border-radius: 1px 1px 0 0;
+    }
+    .kraft-card:hover {
+      box-shadow:
+        4px 4px 0 var(--kraft-dark),
+        8px 8px 0 rgba(0,0,0,0.14),
+        0 20px 56px rgba(0,0,0,0.22);
+    }
+
+    /* notepad lines on cards */
+    .lined::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image: repeating-linear-gradient(
+        transparent,
+        transparent 27px,
+        rgba(107,139,174,0.12) 27px,
+        rgba(107,139,174,0.12) 28px
+      );
+      background-position: 0 40px;
+      pointer-events: none;
+      border-radius: inherit;
+      z-index: 0;
+    }
+    .lined > * { position: relative; z-index: 1; }
+
+    /* ============================================================
+       PUSH PIN
+    ============================================================ */
+    .pin {
+      position: absolute;
+      z-index: 10;
+      font-size: 1.8rem;
+      filter: drop-shadow(0 3px 6px rgba(0,0,0,0.35));
+      pointer-events: none;
+    }
+    .pin-tl { top: -18px; left: 24px; }
+    .pin-tr { top: -18px; right: 24px; transform: rotate(15deg); }
+    .pin-tc { top: -18px; left: 50%; transform: translateX(-50%); }
+
+    /* ============================================================
+       NAVIGATION — kraft strip
+    ============================================================ */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+    }
+    .nav-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 40px;
+      height: 62px;
+      background: var(--navy-dark);
+      border-bottom: 4px solid var(--red);
+      position: relative;
+    }
+    .nav-bar::after {
+      content: '';
+      position: absolute;
+      bottom: -12px; left: 0; right: 0;
+      height: 8px;
+      background: repeating-conic-gradient(var(--red) 0 25%, var(--cream) 0 50%) 0 / 16px 16px;
+    }
+    .nav-logo {
+      font-family: var(--font-script);
+      font-size: 1.6rem;
+      color: var(--cream);
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-shadow: 1px 2px 4px rgba(0,0,0,0.3);
+    }
+    .logo-bloom {
+      width: 30px; height: 30px;
+      background: radial-gradient(circle at 40% 35%, var(--cream) 0%, var(--kraft) 50%, var(--red) 100%);
+      border-radius: 50%;
+      border: 2px solid rgba(255,255,255,0.3);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+    }
+    .nav-links {
+      display: flex; gap: 4px; list-style: none; align-items: center;
+    }
+    .nav-links a {
+      font-family: var(--font-body);
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: rgba(245,235,216,0.75);
+      text-decoration: none;
+      padding: 6px 16px;
+      border-radius: 100px;
+      letter-spacing: 0.02em;
+      transition: all 0.2s;
+    }
+    .nav-links a:hover { background: rgba(245,235,216,0.12); color: var(--cream); }
+    .nav-join {
+      background: var(--red) !important;
+      color: var(--cream) !important;
+      font-weight: 700 !important;
+      box-shadow: 2px 2px 0 rgba(0,0,0,0.3) !important;
+      transition: transform 0.2s, box-shadow 0.2s !important;
+    }
+    .nav-join:hover { transform: translateY(-1px); box-shadow: 3px 3px 0 rgba(0,0,0,0.35) !important; }
+    .nav-hbg {
+      display: none; flex-direction: column; gap: 5px;
+      background: none; border: none; cursor: pointer; padding: 4px;
+    }
+    .nav-hbg span { display: block; width: 22px; height: 2px; background: var(--cream); }
+
+    /* ============================================================
+       HERO — crumpled denim with gingham corners
+    ============================================================ */
+    .hero {
+      min-height: 100svh;
+      padding-top: 70px;
+      background: var(--denim);
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* denim paper texture */
+    .hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image:
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='600' height='600'%3E%3Cfilter id='t'%3E%3CfeTurbulence type='turbulence' baseFrequency='0.03 0.06' numOctaves='8' seed='5' stitchTiles='stitch'/%3E%3CfeColorMatrix type='matrix' values='0.15 0 0 0 0.3  0 0.15 0 0 0.42  0 0 0.15 0 0.55  0 0 0 0.5 0'/%3E%3C/filter%3E%3Crect width='600' height='600' filter='url(%23t)'/%3E%3C/svg%3E");
+      background-repeat: repeat;
+      mix-blend-mode: overlay;
+      opacity: 0.55;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* gingham corner panels */
+    .hero-corner-tl, .hero-corner-br {
+      position: absolute;
+      width: 260px; height: 260px;
+      background: var(--gingham-bg);
+      opacity: 0.75;
+      z-index: 0;
+    }
+    .hero-corner-tl { top: 62px; left: 0; clip-path: polygon(0 0, 100% 0, 0 100%); }
+    .hero-corner-br { bottom: 0; right: 0; clip-path: polygon(100% 0, 100% 100%, 0 100%); }
+
+    .hero-inner {
+      position: relative;
+      z-index: 2;
+      display: grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      gap: 48px;
+      align-items: center;
+      padding: 64px 0 80px;
+    }
+
+    /* LEFT — hero text */
+    .hero-left {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+    .hero-eyebrow {
+      font-family: var(--font-body);
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--cream);
+      opacity: 0.8;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .hero-eyebrow::before {
+      content: '';
+      display: block;
+      width: 24px; height: 1.5px;
+      background: var(--cream);
+      opacity: 0.5;
+    }
+
+    /* Big headline — serif bold red */
+    .hero-h1-red {
+      font-family: var(--font-serif);
+      font-weight: 900;
+      font-size: clamp(3rem, 6vw, 5.8rem);
+      line-height: 0.95;
+      letter-spacing: -0.02em;
+      color: var(--red);
+      text-shadow: 2px 3px 0 rgba(0,0,0,0.15);
+    }
+    /* Script navy line */
+    .hero-h1-script {
+      font-family: var(--font-script);
+      font-size: clamp(2.4rem, 5vw, 4.8rem);
+      color: var(--navy-dark);
+      line-height: 1.0;
+      text-shadow: 1px 2px 3px rgba(255,255,255,0.3);
+    }
+    /* Serif cream line */
+    .hero-h1-serif {
+      font-family: var(--font-serif);
+      font-weight: 700;
+      font-size: clamp(2.4rem, 4.5vw, 4.2rem);
+      line-height: 1.05;
+      color: var(--cream);
+      letter-spacing: 0.05em;
+    }
+
+    .hero-sub {
+      font-family: var(--font-body);
+      font-size: 0.92rem;
+      color: rgba(245,235,216,0.8);
+      line-height: 1.7;
+      max-width: 380px;
+    }
+
+    /* CTAs */
+    .hero-actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 8px; }
+    .btn-scrap {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-family: var(--font-body);
+      font-weight: 700;
+      font-size: 0.85rem;
+      letter-spacing: 0.04em;
+      padding: 13px 26px;
+      border-radius: 4px;
+      cursor: pointer;
+      text-decoration: none;
+      border: 2.5px solid transparent;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      position: relative;
+    }
+    .btn-red {
+      background: var(--red);
+      color: var(--cream);
+      border-color: var(--navy-dark);
+      box-shadow: 3px 3px 0 var(--navy-dark);
+    }
+    .btn-red:hover { transform: translate(-2px,-2px); box-shadow: 5px 5px 0 var(--navy-dark); }
+    .btn-cream {
+      background: var(--cream);
+      color: var(--navy-dark);
+      border-color: var(--navy-dark);
+      box-shadow: 3px 3px 0 rgba(0,0,0,0.2);
+    }
+    .btn-cream:hover { transform: translate(-2px,-2px); box-shadow: 5px 5px 0 rgba(0,0,0,0.25); }
+    .btn-navy {
+      background: var(--navy);
+      color: var(--cream);
+      border-color: var(--navy-dark);
+      box-shadow: 3px 3px 0 rgba(0,0,0,0.3);
+    }
+    .btn-navy:hover { transform: translate(-2px,-2px); box-shadow: 5px 5px 0 rgba(0,0,0,0.35); }
+
+    /* Collab tag */
+    .collab-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(255,255,255,0.12);
+      border: 1.5px solid rgba(245,235,216,0.3);
+      border-radius: 4px;
+      padding: 8px 16px;
+      width: fit-content;
+    }
+    .collab-tag span {
+      font-family: var(--font-body);
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      color: var(--cream);
+      opacity: 0.75;
+      text-transform: uppercase;
+    }
+
+    /* RIGHT — hero card */
+    .hero-right { display: flex; justify-content: center; }
+    .hero-main-card {
+      width: 100%;
+      max-width: 420px;
+      padding: 48px 40px 44px;
+      margin-top: 20px;
+      transform: rotate(-1.5deg);
+    }
+    .hero-main-card:hover { transform: rotate(-0.5deg) translateY(-6px); }
+    .hero-card-title-red {
+      font-family: var(--font-serif);
+      font-weight: 900;
+      font-size: 2.2rem;
+      color: var(--red);
+      letter-spacing: 0.03em;
+      line-height: 1.0;
+      margin-bottom: 4px;
+    }
+    .hero-card-script {
+      font-family: var(--font-script);
+      font-size: 2.0rem;
+      color: var(--navy);
+      line-height: 1.1;
+      margin-bottom: 6px;
+    }
+    .hero-card-serif {
+      font-family: var(--font-serif);
+      font-weight: 700;
+      font-size: 1.5rem;
+      letter-spacing: 0.08em;
+      color: var(--red);
+      margin-bottom: 16px;
+    }
+
+    /* Scrabble tiles */
+    .scrabble-tiles {
+      display: flex;
+      gap: 4px;
+      margin-top: 12px;
+    }
+    .tile {
+      width: 30px; height: 30px;
+      background: var(--cream-dark);
+      border: 2px solid var(--ink);
+      border-radius: 3px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--font-classic);
+      font-weight: 700;
+      font-size: 0.9rem;
+      color: var(--ink);
+      box-shadow: 2px 2px 0 var(--ink);
+    }
+    .stat-badge {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 18px;
+      padding: 10px 14px;
+      background: rgba(107,139,174,0.12);
+      border: 1.5px dashed var(--denim);
+      border-radius: 4px;
+    }
+    .stat-badge .num {
+      font-family: var(--font-serif);
+      font-weight: 900;
+      font-size: 1.4rem;
+      color: var(--navy);
+      white-space: nowrap;
+    }
+    .stat-badge p {
+      font-size: 0.75rem;
+      color: #555;
+      line-height: 1.4;
+    }
+
+    /* hero megaphone deco */
+    .mega-deco {
+      position: absolute;
+      font-size: 2.8rem;
+      filter: drop-shadow(2px 3px 6px rgba(0,0,0,0.3));
+      z-index: 5;
+      pointer-events: none;
+      animation: floatDeco 4s ease-in-out infinite;
+    }
+    @keyframes floatDeco {
+      0%,100% { transform: rotate(-12deg) translateY(0); }
+      50%      { transform: rotate(-8deg) translateY(-8px); }
+    }
+    .star-deco {
+      position: absolute;
+      font-size: 1.6rem;
+      pointer-events: none;
+      animation: twinkle 3s ease-in-out infinite;
+      filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
+    }
+    @keyframes twinkle {
+      0%,100% { transform: scale(1) rotate(0deg); opacity: 0.7; }
+      50%      { transform: scale(1.25) rotate(10deg); opacity: 1; }
+    }
+
+    /* ============================================================
+       GINGHAM MARQUEE STRIP
+    ============================================================ */
+    .marquee-section {
+      border-top: 4px solid var(--navy-dark);
+      border-bottom: 4px solid var(--navy-dark);
+      background: var(--red);
+      overflow: hidden;
+      height: 46px;
+      display: flex;
+      align-items: center;
+      position: relative;
+      z-index: 2;
+    }
+    .marquee-track {
+      display: flex;
+      white-space: nowrap;
+      animation: marqueeScroll 20s linear infinite;
+    }
+    @keyframes marqueeScroll { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+    .marquee-item {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 0 32px;
+      border-right: 2px solid rgba(255,255,255,0.2);
+      font-family: var(--font-body);
+      font-weight: 700;
+      font-size: 0.72rem;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--cream);
+    }
+    .m-star { color: var(--cream); opacity: 0.7; font-size: 0.6rem; }
+
+    /* ============================================================
+       SECTION: BENTO / WHAT WE DO — on cream background
+    ============================================================ */
+    .what-section {
+      background: var(--cream-dark);
+      position: relative;
+      overflow: hidden;
+      padding: 80px 0 100px;
+    }
+    .what-section::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 100%;
+      background-image: repeating-linear-gradient(
+        transparent, transparent 35px,
+        rgba(107,139,174,0.08) 35px, rgba(107,139,174,0.08) 36px
+      );
+      pointer-events: none;
+    }
+    /* gingham left strip */
+    .what-section::after {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; bottom: 0;
+      width: 32px;
+      background: var(--gingham-bg);
+      opacity: 0.6;
+    }
+
+    .section-heading-red {
+      font-family: var(--font-serif);
+      font-weight: 900;
+      font-size: clamp(2.4rem, 4.5vw, 4rem);
+      letter-spacing: 0.01em;
+      color: var(--red);
+      line-height: 1.0;
+      text-shadow: 2px 2px 0 rgba(0,0,0,0.08);
+    }
+    .section-script {
+      font-family: var(--font-script);
+      font-size: clamp(1.8rem, 3.5vw, 3rem);
+      color: var(--navy);
+      line-height: 1.1;
+    }
+    .section-subhead {
+      font-family: var(--font-body);
+      font-size: 0.82rem;
+      font-weight: 600;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--denim-dark);
+      margin-top: 8px;
+    }
+
+    /* Bento grid */
+    .bento {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+      margin-top: 48px;
+    }
+    .bento-card {
+      padding: 36px 28px 32px;
+      border-radius: 4px;
+      position: relative;
+      transition: transform 0.25s ease;
+    }
+    .bento-card:hover { transform: translateY(-5px) rotate(-0.5deg); }
+    .bento-card .b-icon { font-size: 2rem; display: block; margin-bottom: 14px; }
+    .bento-card h3 {
+      font-family: var(--font-serif);
+      font-weight: 700;
+      font-size: 1.25rem;
+      color: var(--navy-dark);
+      margin-bottom: 10px;
+      line-height: 1.2;
+    }
+    .bento-card p {
+      font-size: 0.86rem;
+      line-height: 1.68;
+      color: rgba(42,31,20,0.7);
+    }
+    .bento-card.bc-denim {
+      background: var(--denim);
+      border: 2.5px solid var(--denim-dark);
+      box-shadow: 4px 4px 0 var(--denim-dark), 0 8px 24px rgba(0,0,0,0.12);
+    }
+    .bento-card.bc-denim h3 { color: var(--cream); }
+    .bento-card.bc-denim p  { color: rgba(245,235,216,0.75); }
+    .bento-card.bc-navy {
+      background: var(--navy);
+      border: 2.5px solid var(--navy-dark);
+      box-shadow: 4px 4px 0 var(--navy-dark), 0 8px 24px rgba(0,0,0,0.14);
+    }
+    .bento-card.bc-navy h3 { color: var(--cream); }
+    .bento-card.bc-navy p  { color: rgba(245,235,216,0.7); }
+
+    /* Meter bars */
+    .mbar-group { display: flex; flex-direction: column; gap: 10px; margin-top: 12px; }
+    .mbar-label { font-size: 0.68rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 4px; }
+    .mbar { height: 8px; border-radius: 100px; background: rgba(255,255,255,0.15); overflow: hidden; }
+    .mfill { height: 100%; border-radius: 100px; width: 0%; transition: width 2s cubic-bezier(0.4,0,0.2,1); }
+    .mf-cream { background: linear-gradient(90deg, var(--cream-dark), var(--cream)); }
+    .mf-red   { background: linear-gradient(90deg, var(--red-light), #FF6B6B); }
+
+    /* formula */
+    .formula-note {
+      background: rgba(255,255,255,0.15);
+      border: 1.5px dashed rgba(245,235,216,0.35);
+      border-radius: 4px;
+      padding: 14px 16px;
+      margin-top: 12px;
+    }
+    .formula-note p {
+      font-family: var(--font-script);
+      font-size: 1.1rem;
+      color: var(--cream) !important;
+      line-height: 1.5;
+      opacity: 0.9;
+    }
+
+    /* wide card */
+    .bento-wide { grid-column: span 2; }
+
+    /* ============================================================
+       CALENDAR SECTION — on denim
+    ============================================================ */
+    .cal-section {
+      background: var(--denim-dark);
+      padding: 80px 0 100px;
+      position: relative;
+      overflow: hidden;
+    }
+    .cal-section::before {
+      content: '';
+      position: absolute;
+      top: 0; right: 0; bottom: 0;
+      width: 32px;
+      background: var(--gingham-bg);
+      opacity: 0.5;
+    }
+    /* wrinkled overlay */
+    .cal-section::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='400'%3E%3Cfilter id='w'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.04' numOctaves='5' seed='8'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='400' height='400' filter='url(%23w)' opacity='0.06'/%3E%3C/svg%3E");
+      pointer-events: none;
+      mix-blend-mode: overlay;
+    }
+
+    .cal-heading { margin-bottom: 48px; }
+    .cal-grid {
+      display: grid;
+      grid-template-columns: 260px 1fr;
+      gap: 0;
+      border: 3px solid var(--navy-dark);
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 6px 6px 0 rgba(0,0,0,0.25);
+      position: relative;
+      z-index: 2;
+    }
+    .cal-sidebar {
+      background: var(--navy-dark);
+      padding: 32px 20px;
+      border-right: 3px solid rgba(255,255,255,0.1);
+    }
+    .cal-sidebar-label {
+      font-family: var(--font-body);
+      font-size: 0.62rem;
+      font-weight: 700;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: rgba(245,235,216,0.4);
+      margin-bottom: 18px;
+    }
+    .month-list { list-style: none; }
+    .month-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 12px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-family: var(--font-body);
+      font-size: 0.84rem;
+      font-weight: 500;
+      color: rgba(245,235,216,0.45);
+      transition: all 0.18s;
+      margin-bottom: 2px;
+    }
+    .month-item:hover { background: rgba(255,255,255,0.06); color: var(--cream); }
+    .month-item.active { background: rgba(184,50,50,0.2); color: #E88; }
+    .month-dot { width: 7px; height: 7px; border-radius: 50%; background: rgba(245,235,216,0.2); flex-shrink: 0; }
+    .month-item.active .month-dot { background: var(--red-light); }
+
+    .cal-detail {
+      background: var(--cream);
+      padding: 44px 52px;
+      min-height: 440px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      position: relative;
+    }
+    .cal-detail::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 6px;
+      background: var(--gingham-bg);
+    }
+    .detail-hidden { display: none; }
+    .cal-month-name {
+      font-family: var(--font-serif);
+      font-weight: 900;
+      font-size: 3.5rem;
+      letter-spacing: -0.03em;
+      color: var(--red);
+      margin-bottom: 28px;
+      line-height: 1;
+    }
+    .cal-events { display: flex; flex-direction: column; gap: 10px; }
+    .cal-event {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 12px 16px;
+      border-radius: 4px;
+      border: 1.5px solid rgba(107,139,174,0.15);
+      background: rgba(255,255,255,0.6);
+      transition: all 0.18s;
+    }
+    .cal-event:hover {
+      border-color: var(--denim);
+      background: rgba(107,139,174,0.08);
+      transform: translateX(4px);
+    }
+    .ev-dot { width: 8px; height: 8px; border-radius: 50%; margin-top: 5px; flex-shrink: 0; }
+    .ev-date { font-size: 0.65rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--denim-dark); margin-bottom: 2px; }
+    .ev-name { font-family: var(--font-classic); font-size: 0.88rem; color: var(--navy-dark); }
+    .cal-action-note {
+      margin-top: 24px;
+      padding: 16px 20px;
+      background: var(--navy-dark);
+      color: var(--cream);
+      border-radius: 4px;
+      border-left: 4px solid var(--red);
+    }
+    .cal-action-note .action-label {
+      font-size: 0.62rem;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--red-light);
+      margin-bottom: 4px;
+    }
+    .cal-action-note p {
+      font-family: var(--font-script);
+      font-size: 1.1rem;
+      line-height: 1.4;
+    }
+    .cal-action-note strong { color: var(--denim-light); }
+
+    /* ============================================================
+       STORY WALL — cream lined paper
+    ============================================================ */
+    .story-section {
+      background: var(--cream);
+      padding: 80px 0 100px;
+      position: relative;
+      overflow: hidden;
+    }
+    /* lined paper */
+    .story-section::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image: repeating-linear-gradient(
+        transparent, transparent 35px,
+        rgba(107,139,174,0.12) 35px, rgba(107,139,174,0.12) 36px
+      );
+      pointer-events: none;
+    }
+    .story-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 56px;
+      align-items: start;
+      position: relative;
+      z-index: 2;
+    }
+    /* form as kraft notepad */
+    .form-card {
+      padding: 40px 36px 36px;
+      transform: rotate(-0.8deg);
+    }
+    .form-title-red {
+      font-family: var(--font-serif);
+      font-weight: 900;
+      font-size: 1.6rem;
+      color: var(--red);
+      margin-bottom: 4px;
+    }
+    .form-title-script {
+      font-family: var(--font-script);
+      font-size: 1.5rem;
+      color: var(--navy);
+      margin-bottom: 16px;
+    }
+    .form-sub {
+      font-size: 0.82rem;
+      color: rgba(42,31,20,0.6);
+      line-height: 1.65;
+      margin-bottom: 20px;
+    }
+    .f-label {
+      display: block;
+      font-size: 0.65rem;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--denim-dark);
+      margin-bottom: 5px;
+      margin-top: 14px;
+    }
+    .f-input, .f-select, .f-textarea {
+      width: 100%;
+      background: rgba(255,255,255,0.75);
+      border: 2px solid var(--kraft);
+      border-radius: 3px;
+      padding: 10px 13px;
+      font-family: var(--font-body);
+      font-size: 0.88rem;
+      color: var(--ink);
+      outline: none;
+      resize: none;
+      transition: border-color 0.18s;
+    }
+    .f-input:focus, .f-select:focus, .f-textarea:focus {
+      border-color: var(--denim);
+    }
+    .f-char { font-size: 0.65rem; color: var(--denim-dark); opacity: 0.5; text-align: right; margin-top: 3px; }
+    .btn-submit { margin-top: 18px; width: 100%; justify-content: center; border-radius: 3px; }
+
+    /* sticker wall */
+    .wall-title-red {
+      font-family: var(--font-serif);
+      font-weight: 900;
+      font-size: 1.5rem;
+      color: var(--red);
+      margin-bottom: 2px;
+    }
+    .wall-sub {
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--denim-dark);
+      opacity: 0.6;
+      margin-bottom: 20px;
+    }
+    .sticker-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+    .sticker-note {
+      padding: 16px 14px;
+      border-radius: 2px 10px 10px 10px;
+      font-family: var(--font-body);
+      font-size: 0.83rem;
+      line-height: 1.52;
+      color: rgba(42,31,20,0.8);
+      box-shadow: 2px 3px 0 rgba(0,0,0,0.15), 0 4px 14px rgba(0,0,0,0.12);
+      transform: rotate(var(--r, 0deg));
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      cursor: pointer;
+      position: relative;
+    }
+    .sticker-note:hover { transform: rotate(0deg) translateY(-3px); box-shadow: 3px 5px 0 rgba(0,0,0,0.2), 0 8px 24px rgba(0,0,0,0.18); }
+    .s-emoji { font-size: 1.1rem; display: block; margin-bottom: 5px; }
+    .sn-y { background: #FFE566; }
+    .sn-m { background: #C8F0D8; }
+    .sn-l { background: #E8D8F5; }
+    .sn-p { background: #FFD8C0; }
+    .sn-b { background: #C4E4F8; }
+    .sn-k { background: #FCDDE8; }
+
+    /* ============================================================
+       VISION SECTION — navy dark
+    ============================================================ */
+    .vision-section {
+      background: var(--navy-dark);
+      padding: 0;
+      position: relative;
+      overflow: hidden;
+    }
+    .vision-section::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; bottom: 0;
+      width: 24px;
+      background: var(--gingham-bg);
+      opacity: 0.3;
+    }
+    .vision-section::after {
+      content: '';
+      position: absolute;
+      top: 0; right: 0; bottom: 0;
+      width: 24px;
+      background: var(--gingham-bg);
+      opacity: 0.3;
+    }
+    .vision-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      min-height: 560px;
+    }
+    .vision-left {
+      padding: 88px 64px 88px 48px;
+      border-right: 3px solid rgba(255,255,255,0.07);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 22px;
+    }
+    .vision-quote-red {
+      font-family: var(--font-serif);
+      font-weight: 900;
+      font-size: clamp(1.8rem, 3vw, 3rem);
+      letter-spacing: 0.01em;
+      color: var(--red-light);
+      line-height: 1.05;
+    }
+    .vision-quote-script {
+      font-family: var(--font-script);
+      font-size: clamp(1.6rem, 2.8vw, 2.6rem);
+      color: var(--denim-light);
+      line-height: 1.1;
+    }
+    .vision-quote-serif {
+      font-family: var(--font-serif);
+      font-weight: 700;
+      font-size: clamp(1.2rem, 2vw, 1.7rem);
+      color: var(--cream);
+      letter-spacing: 0.04em;
+    }
+    .vision-mono {
+      font-size: 0.78rem;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: rgba(197,216,234,0.45);
+      line-height: 1.8;
+    }
+    .vision-right {
+      padding: 64px 48px 64px 56px;
+      background: rgba(255,255,255,0.03);
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      justify-content: center;
+    }
+    .vision-right-label {
+      font-size: 0.62rem;
+      font-weight: 700;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: rgba(245,235,216,0.25);
+      margin-bottom: 6px;
+    }
+    .pillar {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 13px 16px;
+      border-radius: 4px;
+      border: 1.5px solid rgba(255,255,255,0.05);
+      transition: background 0.18s, transform 0.18s;
+      cursor: default;
+    }
+    .pillar:hover { background: rgba(255,255,255,0.05); transform: translateX(5px); }
+    .p-icon {
+      width: 36px; height: 36px;
+      border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1rem; flex-shrink: 0;
+    }
+    .pi-d { background: rgba(107,139,174,0.2); border: 1px solid rgba(107,139,174,0.3); }
+    .pi-r { background: rgba(184,50,50,0.2); border: 1px solid rgba(184,50,50,0.3); }
+    .pi-n { background: rgba(44,72,117,0.3); border: 1px solid rgba(100,140,200,0.25); }
+    .pillar h4 { font-family: var(--font-classic); font-weight: 700; font-size: 0.85rem; color: var(--cream); }
+    .pillar p  { font-size: 0.76rem; color: rgba(245,235,216,0.38); margin-top: 1px; line-height: 1.45; }
+
+    /* ============================================================
+       JOIN SECTION — cream
+    ============================================================ */
+    .join-section {
+      background: var(--cream-dark);
+      padding: 80px 0 100px;
+      position: relative;
+      overflow: hidden;
+    }
+    .join-section::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image: repeating-linear-gradient(
+        transparent, transparent 35px,
+        rgba(107,139,174,0.07) 35px, rgba(107,139,174,0.07) 36px
+      );
+    }
+    .join-inner {
+      text-align: center;
+      position: relative;
+      z-index: 2;
+    }
+    .join-h-red {
+      font-family: var(--font-serif);
+      font-weight: 900;
+      font-size: clamp(3.5rem, 8vw, 8rem);
+      letter-spacing: -0.02em;
+      line-height: 0.9;
+      color: var(--red);
+      text-shadow: 3px 3px 0 rgba(0,0,0,0.1);
+      margin-bottom: 8px;
+    }
+    .join-h-script {
+      font-family: var(--font-script);
+      font-size: clamp(2rem, 4vw, 3.5rem);
+      color: var(--navy);
+      margin-bottom: 32px;
+    }
+    .join-sub {
+      font-size: 0.82rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--denim-dark);
+      opacity: 0.6;
+      margin-bottom: 36px;
+    }
+    .roles-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      justify-content: center;
+      margin-bottom: 44px;
+    }
+    .role-chip {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      padding: 8px 18px;
+      border-radius: 3px;
+      border: 2px solid var(--navy-dark);
+      background: transparent;
+      font-family: var(--font-body);
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--navy-dark);
+      box-shadow: 2px 2px 0 var(--navy-dark);
+      transition: all 0.18s;
+      cursor: default;
+    }
+    .role-chip:hover {
+      background: var(--navy-dark);
+      color: var(--cream);
+      transform: translate(-1px, -1px);
+      box-shadow: 3px 3px 0 rgba(0,0,0,0.3);
+    }
+    .r-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+    /* join kraft card */
+    .join-card {
+      max-width: 500px;
+      margin: 0 auto;
+      padding: 36px 40px;
+      transform: rotate(0.5deg);
+      text-align: left;
+    }
+    .join-card-quote {
+      font-family: var(--font-script);
+      font-size: 1.4rem;
+      color: var(--navy);
+      line-height: 1.5;
+      margin-bottom: 20px;
+    }
+
+    /* ============================================================
+       COLLABORATIONS
+    ============================================================ */
+    .collab-section {
+      padding: 100px 0;
+      position: relative;
+    }
+    .collab-title-red {
+      font-family: var(--font-serif);
+      font-size: clamp(2.5rem, 6vw, 4rem);
+      font-weight: 900;
+      color: var(--red);
+      line-height: 1;
+      text-transform: uppercase;
+      text-align: center;
+      margin-bottom: 8px;
+    }
+    .collab-title-script {
+      font-family: var(--font-script);
+      font-size: clamp(2rem, 4vw, 3rem);
+      color: var(--navy);
+      text-align: center;
+      margin-bottom: 56px;
+      transform: rotate(-2deg);
+    }
+    .collab-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 48px 32px;
+      padding: 0 24px;
+      max-width: 1100px;
+      margin: 0 auto;
+      justify-items: center;
+      align-items: flex-start;
+    }
+    .collab-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 20px;
+      transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+      position: relative;
+    }
+    .collab-item:hover {
+      transform: translateY(-8px) scale(1.05);
+    }
+    .collab-item:nth-child(even) {
+      margin-top: 32px;
+    }
+    .collab-photo {
+      width: 170px;
+      height: 170px;
+      border-radius: 50%;
+      object-fit: cover;
+      background: var(--cream);
+      border: 6px solid var(--cream);
+      box-shadow: 0 16px 32px rgba(26, 46, 79, 0.15), inset 0 0 0 1px rgba(200, 169, 122, 0.3);
+      padding: 12px;
+      background-clip: padding-box;
+      transform: rotate(2deg);
+    }
+    .collab-item:nth-child(even) .collab-photo {
+      transform: rotate(-1.5deg);
+    }
+    .collab-name {
+      font-family: var(--font-classic);
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--ink);
+      text-align: center;
+      line-height: 1.35;
+      background: var(--cream);
+      padding: 8px 18px;
+      border-radius: 2px;
+      box-shadow: 2px 2px 0 var(--kraft);
+      transform: rotate(1.5deg);
+      position: relative;
+    }
+    .collab-item:nth-child(2) .collab-name { transform: rotate(-2deg); background: var(--white); }
+    .collab-item:nth-child(3) .collab-name { transform: rotate(2.5deg); }
+    .collab-item:nth-child(4) .collab-name { transform: rotate(-1deg); background: var(--white); }
+    
+    .collab-pin {
+      position: absolute;
+      top: -8px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 1.2rem;
+      text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    }
+
+    /* ============================================================
+       FOOTER — navy
+    ============================================================ */
+    footer {
+      background: var(--navy-dark);
+      color: var(--cream);
+      border-top: 4px solid var(--red);
+    }
+    .footer-gingham {
+      height: 10px;
+      background: var(--gingham-bg);
+      border-bottom: 2px solid var(--navy-dark);
+    }
+    .footer-inner { padding: 64px 0 40px; }
+    .footer-grid {
+      display: grid;
+      grid-template-columns: 1.5fr 1fr 1fr;
+      gap: 56px;
+      margin-bottom: 48px;
+      padding-bottom: 48px;
+      border-bottom: 1px solid rgba(245,235,216,0.1);
+    }
+    .f-brand-name {
+      font-family: var(--font-script);
+      font-size: 2rem;
+      color: var(--cream);
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .f-desc {
+      font-size: 0.82rem;
+      line-height: 1.75;
+      color: rgba(245,235,216,0.4);
+      max-width: 280px;
+      margin-bottom: 16px;
+    }
+    .f-tag {
+      font-family: var(--font-script);
+      font-size: 1.05rem;
+      color: rgba(197,216,234,0.5);
+    }
+    .f-col-title {
+      font-size: 0.6rem;
+      font-weight: 700;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: rgba(245,235,216,0.25);
+      margin-bottom: 18px;
+    }
+    .f-col ul { list-style: none; }
+    .f-col li { margin-bottom: 9px; }
+    .f-col a {
+      font-size: 0.83rem;
+      color: rgba(245,235,216,0.45);
+      text-decoration: none;
+      transition: color 0.18s;
+    }
+    .f-col a:hover { color: var(--denim-light); }
+    .footer-bottom {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.72rem;
+      color: rgba(245,235,216,0.25);
+    }
+    .footer-by {
+      font-family: var(--font-script);
+      font-size: 1rem;
+      color: rgba(197,216,234,0.45);
+    }
+
+    /* ============================================================
+       RESPONSIVE
+    ============================================================ */
+    @media (max-width: 1024px) {
+      .hero-inner, .story-grid, .vision-grid, .footer-grid { grid-template-columns: 1fr; }
+      .hero-right { display: none; }
+      .vision-left { border-right: none; padding: 72px 0; }
+      .vision-right { padding: 48px 0; }
+      .bento { grid-template-columns: 1fr 1fr; }
+      .bento-wide { grid-column: span 2; }
+      .cal-grid { grid-template-columns: 1fr; }
+      .cal-sidebar { border-right: none; border-bottom: 2px solid rgba(255,255,255,0.1); }
+    }
+    @media (max-width: 768px) {
+      .wrap { padding: 0 20px; }
+      .nav-bar { padding: 0 20px; }
+      .nav-links { display: none; }
+      .nav-hbg { display: flex; }
+      .bento { grid-template-columns: 1fr; }
+      .bento-wide { grid-column: span 1; }
+      .sticker-grid { grid-template-columns: 1fr; }
+      .join-h-red { font-size: 3rem; }
+      .hero-h1-red { font-size: 2.6rem; }
+      .hero-h1-script { font-size: 2rem; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .marquee-track { animation: none; }
+      .logo-bloom { animation: none; }
+      .mega-deco { animation: none; }
+      .star-deco { animation: none; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- CURSOR -->
+<div id="cur-pin" aria-hidden="true">📌</div>
+<div id="cur-ring" aria-hidden="true"></div>
+
+<!-- ============================================================
+     NAVIGATION
+============================================================ -->
+<nav role="navigation" aria-label="Main navigation">
+  <div class="nav-bar">
+    <a href="#" class="nav-logo" aria-label="Project MindBloom">
+      <div class="logo-bloom" aria-hidden="true"></div>
+      Project MindBloom
+    </a>
+    <ul class="nav-links">
+      <li><a href="#about">About</a></li>
+      <li><a href="#what">What We Do</a></li>
+      <li><a href="#calendar">Calendar</a></li>
+      <li><a href="#stories">Stories</a></li>
+      <li><a href="#join" class="nav-join">Join Us</a></li>
+    </ul>
+    <button class="nav-hbg" id="hamburger" aria-label="Open menu" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
+
+<!-- ============================================================
+     HERO
+============================================================ -->
+<main>
+<section class="hero" id="about" aria-labelledby="hero-h1">
+  <div class="hero-corner-tl" aria-hidden="true"></div>
+  <div class="hero-corner-br" aria-hidden="true"></div>
+
+  <!-- decorative elements -->
+  <div class="mega-deco" style="bottom:140px;left:48px;" aria-hidden="true">📢</div>
+  <div class="star-deco" style="top:120px;right:80px;font-size:2rem;animation-delay:0.5s;" aria-hidden="true">⭐</div>
+  <div class="star-deco" style="bottom:200px;right:140px;font-size:1.2rem;animation-delay:1.2s;" aria-hidden="true">✦</div>
+
+  <div class="wrap">
+    <div class="hero-inner">
+      <!-- LEFT -->
+      <div class="hero-left">
+        <p class="hero-eyebrow fade-up">Pune, India — Youth-Led Initiative</p>
+
+        <h1 id="hero-h1">
+          <div class="hero-h1-red fade-up" style="transition-delay:0.05s;">YOUR BRAIN</div>
+          <div class="hero-h1-script fade-up" style="transition-delay:0.10s;">won't shut up?</div>
+          <div class="hero-h1-serif fade-up" style="transition-delay:0.15s;">YOU ARE NOT ALONE.</div>
+        </h1>
+
+        <p class="hero-sub fade-up" style="transition-delay:0.2s;">
+          A grassroots youth-led mental health movement creating safe spaces, honest conversations, and community for teenagers — through creativity, sport, and each other.
+        </p>
+
+        <div class="hero-actions fade-up" style="transition-delay:0.25s;">
+          <a href="#what" class="btn-scrap btn-red" id="cta-pitch">
+            <span>⚽</span> Join MindBloom on the Pitch
+          </a>
+          <a href="#stories" class="btn-scrap btn-cream" id="cta-stories">
+            <span>📖</span> Read Teen Stories
+          </a>
+        </div>
+
+        <div class="collab-tag fade-up" style="transition-delay:0.3s;position:relative;margin-top:24px;">
+          <span>⚽ Pune Ballers × MindBloom — Football meets mental health</span>
+          <div class="pin pin-tr" style="right:-10px;top:-10px;transform:scale(0.8);" aria-hidden="true">📌</div>
+        </div>
+      </div>
+
+      <!-- RIGHT — main scrapbook card -->
+      <div class="hero-right">
+        <div class="kraft-card lined hero-main-card fade-up" style="transition-delay:0.15s;">
+          <div class="pin pin-tl" aria-hidden="true">📌</div>
+          <div class="pin pin-tr" aria-hidden="true">📍</div>
+
+          <div style="padding-top:8px;">
+            <div class="hero-card-title-red">CHILDREN'S</div>
+            <div class="hero-card-script">Mental Health</div>
+            <div class="hero-card-serif">AWARENESS</div>
+            <div class="hero-card-script" style="font-size:1.6rem;color:var(--navy-dark);">week</div>
+
+            <div class="stat-badge">
+              <span class="num">1 in 7</span>
+              <p>teens globally lives with a mental disorder. Most go unaddressed.</p>
+            </div>
+
+            <div style="display:flex;align-items:center;gap:12px;margin-top:16px;">
+              <div class="scrabble-tiles" aria-label="May">
+                <div class="tile">M</div>
+                <div class="tile">A</div>
+                <div class="tile">Y</div>
+              </div>
+              <span style="font-size:1.8rem;" aria-hidden="true">❗</span>
+              <span style="font-size:1.8rem;color:var(--red);" aria-hidden="true">⭐</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- MARQUEE STRIP -->
+<div class="marquee-section" aria-hidden="true">
+  <div class="marquee-track" id="marqueeTrack">
+    <div class="marquee-item"><span class="m-star">✦</span> Stress &amp; Anxiety Reduction</div>
+    <div class="marquee-item"><span class="m-star">✦</span> Social Connection &amp; Belonging</div>
+    <div class="marquee-item"><span class="m-star">✦</span> Resilience Building</div>
+    <div class="marquee-item"><span class="m-star">✦</span> Emotional Outlet</div>
+    <div class="marquee-item"><span class="m-star">✦</span> Football on the Pitch</div>
+    <div class="marquee-item"><span class="m-star">✦</span> By Youth, For Youth</div>
+    <div class="marquee-item"><span class="m-star">✦</span> Safe Spaces</div>
+    <div class="marquee-item"><span class="m-star">✦</span> Break The Stigma</div>
+    <!-- duplicate -->
+    <div class="marquee-item"><span class="m-star">✦</span> Stress &amp; Anxiety Reduction</div>
+    <div class="marquee-item"><span class="m-star">✦</span> Social Connection &amp; Belonging</div>
+    <div class="marquee-item"><span class="m-star">✦</span> Resilience Building</div>
+    <div class="marquee-item"><span class="m-star">✦</span> Emotional Outlet</div>
+    <div class="marquee-item"><span class="m-star">✦</span> Football on the Pitch</div>
+    <div class="marquee-item"><span class="m-star">✦</span> By Youth, For Youth</div>
+    <div class="marquee-item"><span class="m-star">✦</span> Safe Spaces</div>
+    <div class="marquee-item"><span class="m-star">✦</span> Break The Stigma</div>
+  </div>
+</div>
+
+<!-- ============================================================
+     WHAT WE DO
+============================================================ -->
+<section class="what-section" id="what" aria-labelledby="what-h2">
+  <div class="wrap">
+    <div class="fade-up">
+      <p class="section-subhead">The Practice Ground for Life</p>
+      <h2 id="what-h2">
+        <span class="section-heading-red">Sports + Creativity</span><br>
+        <span class="section-script">= Your Mental Toolkit</span>
+      </h2>
+    </div>
+
+    <div class="bento" style="position:relative;z-index:2;">
+
+      <!-- Card 1 — Stress & Anxiety -->
+      <div class="kraft-card bento-card lined fade-up" id="card-stress" style="transition-delay:0.06s;">
+        <span class="b-icon" aria-hidden="true">🧠</span>
+        <h3>Your Brain on Football</h3>
+        <p>Physical activity triggers endorphin &amp; dopamine release while regulating cortisol. Your body already knows how to heal.</p>
+        <div class="mbar-group" role="group" aria-label="Brain chemistry">
+          <div>
+            <p class="mbar-label" style="color:var(--navy);">↑ Dopamine &amp; Endorphins</p>
+            <div class="mbar"><div class="mfill mf-cream" data-target="82" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div></div>
+          </div>
+          <div>
+            <p class="mbar-label" style="color:var(--red);">↓ Cortisol (Stress Hormone)</p>
+            <div class="mbar"><div class="mfill mf-red" data-target="28" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card 2 — Social Connection -->
+      <div class="bento-card bc-denim kraft-card fade-up" style="transition-delay:0.1s;border-color:var(--denim-dark);background:var(--denim);">
+        <div style="position:absolute;top:18px;right:18px;font-size:2rem;animation:floatDeco 5s ease-in-out infinite;" aria-hidden="true">⚽</div>
+        <span class="b-icon" aria-hidden="true">🤝</span>
+        <h3>You're Never Playing Alone</h3>
+        <p>Team sports instantly create a sense of belonging — directly combating loneliness and social exclusion teens face every day.</p>
+        <div style="display:flex;gap:10px;margin-top:10px;" aria-hidden="true">
+          <span style="font-size:1.5rem;">🏆</span>
+          <span style="font-size:1.5rem;">💬</span>
+          <span style="font-size:1.5rem;">🌱</span>
+        </div>
+      </div>
+
+      <!-- Card 3 — Numbers -->
+      <div class="bento-card bc-navy kraft-card fade-up" style="transition-delay:0.14s;border-color:var(--navy-dark);background:var(--navy);justify-content:space-between;min-height:300px;">
+        <div>
+          <span class="b-icon" aria-hidden="true">📊</span>
+          <h3>The Numbers That Matter</h3>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:16px;margin-top:auto;">
+          <div><div style="font-family:var(--font-serif);font-weight:900;font-size:2.2rem;color:var(--denim-light);letter-spacing:-0.04em;">1 in 7</div><div style="font-size:0.72rem;color:rgba(245,235,216,0.45);text-transform:uppercase;letter-spacing:0.08em;">Teens with a mental disorder</div></div>
+          <div><div style="font-family:var(--font-serif);font-weight:900;font-size:2.2rem;color:var(--red-light);letter-spacing:-0.04em;">90%</div><div style="font-size:0.72rem;color:rgba(245,235,216,0.45);text-transform:uppercase;letter-spacing:0.08em;">Cases begin before age 25</div></div>
+          <div><div style="font-family:var(--font-serif);font-weight:900;font-size:2.2rem;color:var(--cream-dark);letter-spacing:-0.04em;">₹0</div><div style="font-size:0.72rem;color:rgba(245,235,216,0.45);text-transform:uppercase;letter-spacing:0.08em;">Cost to seek help from a peer</div></div>
+        </div>
+      </div>
+
+      <!-- Card 4 — Resilience (wide) -->
+      <div class="kraft-card bento-card bento-wide fade-up" style="transition-delay:0.18s;">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:32px;align-items:center;">
+          <div>
+            <span class="b-icon" aria-hidden="true">🔥</span>
+            <h3>Failure is the First Step</h3>
+            <p>Navigating setbacks on the pitch builds the exact mental toolkit teens need to handle life's pressures calmly, every single day.</p>
+          </div>
+          <div class="formula-note" style="background:rgba(107,139,174,0.12);border:1.5px dashed var(--denim);border-radius:4px;padding:18px;">
+            <p style="font-family:var(--font-script);font-size:1.15rem;color:var(--navy-dark);line-height:1.55;">
+              "MindBloom helps teens deal with stress &amp; overthinking by giving them safe spaces and awareness, so they feel less alone."
+            </p>
+            <div style="display:flex;gap:6px;margin-top:10px;">
+              <div class="scrabble-tiles">
+                <div class="tile">X</div>
+              </div>
+              <span style="font-size:0.72rem;color:var(--denim-dark);opacity:0.6;align-self:center;">= Our formula for impact</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     CALENDAR
+============================================================ -->
+<section class="cal-section" id="calendar" aria-labelledby="cal-h2">
+  <div class="wrap">
+    <div class="cal-heading fade-up">
+      <p class="section-subhead" style="color:rgba(197,216,234,0.55);">What We're Working On</p>
+      <h2 id="cal-h2">
+        <span class="section-heading-red">Awareness</span><br>
+        <span class="section-script" style="color:var(--cream);">Calendar</span>
+      </h2>
+    </div>
+
+    <div class="cal-grid fade-up" style="transition-delay:0.1s;">
+      <aside class="cal-sidebar" aria-label="Month selector">
+        <p class="cal-sidebar-label">2025–26 Schedule</p>
+        <ul class="month-list" role="tablist">
+          <li class="month-item active" role="tab" aria-selected="true"  data-month="april"     tabindex="0"><span class="month-dot"></span>April</li>
+          <li class="month-item"        role="tab" aria-selected="false" data-month="may"       tabindex="0"><span class="month-dot"></span>May</li>
+          <li class="month-item"        role="tab" aria-selected="false" data-month="june"      tabindex="0"><span class="month-dot"></span>June</li>
+          <li class="month-item"        role="tab" aria-selected="false" data-month="september" tabindex="0"><span class="month-dot"></span>September</li>
+          <li class="month-item"        role="tab" aria-selected="false" data-month="october"   tabindex="0"><span class="month-dot"></span>October</li>
+          <li class="month-item"        role="tab" aria-selected="false" data-month="november"  tabindex="0"><span class="month-dot"></span>November</li>
+          <li class="month-item"        role="tab" aria-selected="false" data-month="december"  tabindex="0"><span class="month-dot"></span>December</li>
+        </ul>
+      </aside>
+
+      <div class="cal-detail">
+        <div id="detail-april" role="tabpanel">
+          <div class="cal-month-name">April</div>
+          <div class="cal-events">
+            <div class="cal-event"><span class="ev-dot" style="background:#9B59F6;"></span><div><p class="ev-date">Month Theme</p><p class="ev-name">Stress Awareness Month</p></div></div>
+            <div class="cal-event"><span class="ev-dot" style="background:#29B6F6;"></span><div><p class="ev-date">Month Theme</p><p class="ev-name">National Autism Awareness Month</p></div></div>
+            <div class="cal-event"><span class="ev-dot" style="background:var(--denim);"></span><div><p class="ev-date">Apr 7</p><p class="ev-name">World Health Day</p></div></div>
+            <div class="cal-event"><span class="ev-dot" style="background:var(--red);"></span><div><p class="ev-date">Apr 18</p><p class="ev-name">National Stress Awareness Day</p></div></div>
+          </div>
+          <div class="cal-action-note"><p class="action-label">MindBloom Drop</p><p>🎬 "Signs you're stressed without realising it" — <strong>1–2 Reels + Awareness Post</strong></p></div>
+        </div>
+
+        <div id="detail-may" role="tabpanel" class="detail-hidden">
+          <div class="cal-month-name">May</div>
+          <div class="cal-events">
+            <div class="cal-event"><span class="ev-dot" style="background:var(--denim);"></span><div><p class="ev-date">Month Theme</p><p class="ev-name">Mental Health Month 🌿</p></div></div>
+            <div class="cal-event"><span class="ev-dot" style="background:#9B59F6;"></span><div><p class="ev-date">May 6–12</p><p class="ev-name">National Mental Health Counseling Week</p></div></div>
+            <div class="cal-event"><span class="ev-dot" style="background:#FFD600;"></span><div><p class="ev-date">May 9</p><p class="ev-name">National Children's Mental Health Awareness Day</p></div></div>
+          </div>
+          <div class="cal-action-note"><p class="action-label">MindBloom Event</p><p>⚽ "MindBloom on the Pitch" — <strong>Football + mental health talks with Pune Ballers</strong></p></div>
+        </div>
+
+        <div id="detail-june" role="tabpanel" class="detail-hidden">
+          <div class="cal-month-name">June</div>
+          <div class="cal-events">
+            <div class="cal-event"><span class="ev-dot" style="background:#EF9A9A;"></span><div><p class="ev-date">Jun 27</p><p class="ev-name">PTSD Awareness Day</p></div></div>
+          </div>
+          <div class="cal-action-note"><p class="action-label">Content Drop</p><p>📸 "Things no one warned us about trauma" — <strong>photo essay + anonymous confessions</strong></p></div>
+        </div>
+
+        <div id="detail-september" role="tabpanel" class="detail-hidden">
+          <div class="cal-month-name">September</div>
+          <div class="cal-events">
+            <div class="cal-event"><span class="ev-dot" style="background:#9B59F6;"></span><div><p class="ev-date">Month Theme</p><p class="ev-name">National Suicide Prevention Month</p></div></div>
+            <div class="cal-event"><span class="ev-dot" style="background:var(--red);"></span><div><p class="ev-date">Sep 6–12</p><p class="ev-name">National Suicide Prevention Week</p></div></div>
+          </div>
+          <div class="cal-action-note"><p class="action-label">Campaign</p><p>💬 "You are not a burden" — <strong>story wall goes live + peer support push</strong></p></div>
+        </div>
+
+        <div id="detail-october" role="tabpanel" class="detail-hidden">
+          <div class="cal-month-name">October</div>
+          <div class="cal-events">
+            <div class="cal-event"><span class="ev-dot" style="background:var(--denim);"></span><div><p class="ev-date">Oct 10</p><p class="ev-name">World Mental Health Day 🌍</p></div></div>
+            <div class="cal-event"><span class="ev-dot" style="background:#FFD600;"></span><div><p class="ev-date">Month</p><p class="ev-name">ADHD Awareness Month</p></div></div>
+            <div class="cal-event"><span class="ev-dot" style="background:#CE93D8;"></span><div><p class="ev-date">Oct 11–17</p><p class="ev-name">OCD Awareness Week</p></div></div>
+          </div>
+          <div class="cal-action-note"><p class="action-label">Big Event</p><p>🌿 World Mental Health Day workshop — <strong>collaboration with NGOs + schools in Pune</strong></p></div>
+        </div>
+
+        <div id="detail-november" role="tabpanel" class="detail-hidden">
+          <div class="cal-month-name">November</div>
+          <div class="cal-events">
+            <div class="cal-event"><span class="ev-dot" style="background:var(--red);"></span><div><p class="ev-date">Week</p><p class="ev-name">Anti-Bullying Awareness Week</p></div></div>
+            <div class="cal-event"><span class="ev-dot" style="background:#90CAF9;"></span><div><p class="ev-date">Nov 6</p><p class="ev-name">International Stress Awareness Day</p></div></div>
+            <div class="cal-event"><span class="ev-dot" style="background:#9B59F6;"></span><div><p class="ev-date">Nov 21</p><p class="ev-name">International Survivors of Suicide Day</p></div></div>
+          </div>
+          <div class="cal-action-note"><p class="action-label">Campaign</p><p>🛡️ "POV: you're the new kid" — <strong>anti-bullying storytelling series</strong></p></div>
+        </div>
+
+        <div id="detail-december" role="tabpanel" class="detail-hidden">
+          <div class="cal-month-name">December</div>
+          <div class="cal-events">
+            <div class="cal-event"><span class="ev-dot" style="background:var(--denim);"></span><div><p class="ev-date">Month</p><p class="ev-name">Stress-Free Family Holidays Month</p></div></div>
+            <div class="cal-event"><span class="ev-dot" style="background:#B0BEC5;"></span><div><p class="ev-date">Dec 3</p><p class="ev-name">Int'l Day of Persons with Disabilities</p></div></div>
+            <div class="cal-event"><span class="ev-dot" style="background:#FFD600;"></span><div><p class="ev-date">Dec 10</p><p class="ev-name">Human Rights Day</p></div></div>
+          </div>
+          <div class="cal-action-note"><p class="action-label">Year-End</p><p>🎁 MindBloom 2025 impact report + <strong>fundraiser + merch drop 🛍️</strong></p></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     STORY WALL
+============================================================ -->
+<section class="story-section" id="stories" aria-labelledby="stories-h2">
+  <div class="wrap">
+    <div class="fade-up" style="margin-bottom:48px;">
+      <p class="section-subhead" style="color:var(--denim-dark);">The Trust Portal</p>
+      <h2 id="stories-h2">
+        <span class="section-heading-red">Your Voice.</span><br>
+        <span class="section-script">Anonymous. Safe. Heard.</span>
+      </h2>
+    </div>
+
+    <div class="story-grid">
+      <!-- Form -->
+      <div class="fade-up">
+        <div class="kraft-card lined form-card">
+          <div class="pin pin-tc" aria-hidden="true">📌</div>
+          <div style="padding-top:8px;">
+            <div class="form-title-red">Share Your Story</div>
+            <div class="form-title-script">no name. no judgment.</div>
+            <p class="form-sub">Your story becomes a sticker on our community wall, reminding others they're not alone.</p>
+
+            <!-- Status banner (hidden by default) -->
+            <div id="form-banner" role="alert" aria-live="assertive" style="
+              display:none;
+              padding:11px 16px;
+              border-radius:4px;
+              font-size:0.84rem;
+              font-weight:600;
+              line-height:1.45;
+              margin-bottom:14px;
+            "></div>
+
+            <form id="story-form" novalidate>
+              <label class="f-label" for="story-feeling">How are you feeling?</label>
+              <select class="f-select" id="story-feeling" name="feeling" required>
+                <option value="" disabled selected>Choose your vibe...</option>
+                <option value="anxious">😰 Anxious / Overthinking</option>
+                <option value="lonely">😔 Lonely / Disconnected</option>
+                <option value="burned-out">🥱 Burned Out / Exhausted</option>
+                <option value="angry">😤 Frustrated / Angry</option>
+                <option value="hopeful">🌱 Hopeful but Struggling</option>
+                <option value="okay">😊 Actually okay today</option>
+              </select>
+              <label class="f-label" for="story-text">Your anonymous thought</label>
+              <textarea class="f-textarea" id="story-text" rows="4" maxlength="280"
+                placeholder='"I wish someone told me feeling like this doesn&apos;t mean I&apos;m broken..."'
+                required></textarea>
+              <div class="f-char" id="char-count">0 / 280</div>
+              <button type="submit" class="btn-scrap btn-navy btn-submit" id="submit-story">
+                🌸 Add to the Community Wall
+              </button>
+            </form>
+          </div>
+        </div>
+      </div>
+
+      <!-- Sticker wall -->
+      <div class="fade-up" style="transition-delay:0.12s;">
+        <div style="display:flex;align-items:baseline;gap:12px;margin-bottom:2px;">
+          <p class="wall-title-red">Community Wall</p>
+          <span id="story-count-badge" style="
+            font-family:var(--font-body);
+            font-size:0.72rem;
+            font-weight:700;
+            letter-spacing:0.06em;
+            background:var(--red);
+            color:var(--cream);
+            padding:2px 10px;
+            border-radius:100px;
+            display:none;
+          "></span>
+        </div>
+        <p class="wall-sub">Real thoughts · Real teens · Real connection</p>
+        <!-- Loading skeleton -->
+        <div id="wall-loading" style="
+          display:grid;
+          grid-template-columns:1fr 1fr;
+          gap:12px;
+          margin-top:4px;
+        ">
+          <div style="height:90px;background:rgba(200,169,122,0.18);border-radius:4px;animation:shimmer 1.4s ease-in-out infinite;"></div>
+          <div style="height:90px;background:rgba(200,169,122,0.18);border-radius:4px;animation:shimmer 1.4s ease-in-out infinite;animation-delay:0.2s;"></div>
+          <div style="height:90px;background:rgba(200,169,122,0.18);border-radius:4px;animation:shimmer 1.4s ease-in-out infinite;animation-delay:0.4s;"></div>
+          <div style="height:90px;background:rgba(200,169,122,0.18);border-radius:4px;animation:shimmer 1.4s ease-in-out infinite;animation-delay:0.6s;"></div>
+        </div>
+        <div class="sticker-grid" id="sticker-wall" aria-live="polite" aria-label="Anonymous community stories" style="display:none;"></div>
+        <p id="wall-offline" style="
+          display:none;
+          font-size:0.82rem;
+          color:rgba(42,31,20,0.45);
+          margin-top:16px;
+          font-style:italic;
+        ">🔌 Server is offline — start it with <code style='background:rgba(0,0,0,0.07);padding:2px 6px;border-radius:3px;'>node server.js</code> to see live stories.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     VISION SECTION
+============================================================ -->
+<section class="vision-section" aria-labelledby="vision-h2">
+  <div class="vision-grid wrap" style="max-width:var(--max-w);padding:0 32px;">
+    <div class="vision-left fade-up">
+      <p style="font-size:0.65rem;font-weight:700;letter-spacing:0.2em;text-transform:uppercase;color:rgba(197,216,234,0.35);">Vision &amp; Impact</p>
+      <h2 id="vision-h2">
+        <span class="vision-quote-red">Build a generation</span><br>
+        <span class="vision-quote-script">that's emotionally aware,</span><br>
+        <span class="vision-quote-serif">MENTALLY RESILIENT,</span><br>
+        <span class="vision-quote-script">and unafraid to ask for help.</span>
+      </h2>
+      <p class="vision-mono">"One conversation. One workshop.<br>One campaign at a time."</p>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:8px;">
+        <a href="#join" class="btn-scrap btn-red">Join the Movement</a>
+        <a href="#stories" class="btn-scrap btn-cream">Share Your Story</a>
+      </div>
+    </div>
+    <div class="vision-right fade-up" style="transition-delay:0.1s;">
+      <p class="vision-right-label">What Makes Us Different</p>
+      <div class="pillar"><div class="p-icon pi-d" aria-hidden="true">🌱</div><div><h4>By Youth, For Youth</h4><p>Student volunteers leading every team — design, events, content, outreach</p></div></div>
+      <div class="pillar"><div class="p-icon pi-r" aria-hidden="true">💜</div><div><h4>Empathy First, Always</h4><p>Not clinical. Not intimidating. Warm, safe, and human above all else.</p></div></div>
+      <div class="pillar"><div class="p-icon pi-n" aria-hidden="true">🎨</div><div><h4>Creativity as Healing</h4><p>Art, writing, music, football — every form of expression is welcome</p></div></div>
+      <div class="pillar"><div class="p-icon pi-r" aria-hidden="true">⚽</div><div><h4>Football × Mental Health</h4><p>Partnering with Pune Ballers for MindBloom on the Pitch campaigns</p></div></div>
+      <div class="pillar"><div class="p-icon pi-d" aria-hidden="true">🔄</div><div><h4>Growth, Not Perfection</h4><p>Healing looks different for everyone. We meet you where you are.</p></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     JOIN
+============================================================ -->
+<section class="join-section" id="join" aria-labelledby="join-h2">
+  <div class="wrap">
+    <div class="join-inner">
+      <div class="join-h-red fade-up">BLOOM</div>
+      <div class="join-h-script fade-up" style="transition-delay:0.06s;">with us</div>
+      <p class="join-sub fade-up" style="transition-delay:0.1s;">You don't have to be okay to join. You just have to care.</p>
+
+      <div class="roles-row fade-up" style="transition-delay:0.14s;" role="list">
+        <div class="role-chip" role="listitem"><span class="r-dot" style="background:var(--denim);"></span>Design</div>
+        <div class="role-chip" role="listitem"><span class="r-dot" style="background:var(--red);"></span>Marketing &amp; Outreach</div>
+        <div class="role-chip" role="listitem"><span class="r-dot" style="background:var(--kraft);"></span>Content &amp; Research</div>
+        <div class="role-chip" role="listitem"><span class="r-dot" style="background:var(--navy);"></span>Events &amp; Partnerships</div>
+        <div class="role-chip" role="listitem"><span class="r-dot" style="background:#29B6F6;"></span>Finance &amp; Fundraising</div>
+        <div class="role-chip" role="listitem"><span class="r-dot" style="background:var(--denim-dark);"></span>Photography &amp; Video</div>
+      </div>
+
+      <div class="kraft-card lined join-card fade-up" style="transition-delay:0.18s;">
+        <div class="pin pin-tc" aria-hidden="true">📌</div>
+        <div style="padding-top:8px;">
+          <p class="join-card-quote">"If you're part of the MindBloom family, you don't have to pretend you're okay." 🌸</p>
+          <a href="mailto:projectmindbloom@gmail.com" class="btn-scrap btn-red" style="display:inline-flex;width:100%;justify-content:center;" id="cta-join">
+            ✉️ Get in Touch — Join the Team
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+</main>
+
+<!-- ============================================================
+     COLLABORATIONS SECTION
+============================================================ -->
+<section class="collab-section" aria-labelledby="collab-h2">
+  <div class="wrap" style="max-width:var(--max-w);">
+    <div class="fade-up">
+      <h2 id="collab-h2" class="collab-title-red">Our Partners</h2>
+      <div class="collab-title-script">growing together</div>
+    </div>
+    
+    <div class="collab-grid" role="list">
+      <div class="collab-item fade-up" style="transition-delay:0.1s;" role="listitem">
+        <img src="images/collabs/collab1.jpg" alt="Maza Maharashtra Mission" class="collab-photo" loading="lazy" />
+        <div class="collab-name">
+          <div class="collab-pin" aria-hidden="true">📌</div>
+          Maza Maharashtra<br>Mission
+        </div>
+      </div>
+      <div class="collab-item fade-up" style="transition-delay:0.2s;" role="listitem">
+        <img src="images/collabs/collab2.jpg" alt="Afora Foundation" class="collab-photo" loading="lazy" />
+        <div class="collab-name">
+          <div class="collab-pin" aria-hidden="true">📌</div>
+          Afora Foundation
+        </div>
+      </div>
+      <div class="collab-item fade-up" style="transition-delay:0.3s;" role="listitem">
+        <img src="images/collabs/collab3.jpg" alt="Baller Pune Baller League" class="collab-photo" loading="lazy" />
+        <div class="collab-name">
+          <div class="collab-pin" aria-hidden="true">📌</div>
+          Baller Pune<br>Baller League
+        </div>
+      </div>
+      <div class="collab-item fade-up" style="transition-delay:0.4s;" role="listitem">
+        <img src="images/collabs/collab4.jpg" alt="Urban Poona Impact Club" class="collab-photo" loading="lazy" />
+        <div class="collab-name">
+          <div class="collab-pin" aria-hidden="true">📌</div>
+          Urban Poona<br>Impact Club
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     FOOTER
+============================================================ -->
+<footer role="contentinfo">
+  <div class="footer-gingham" aria-hidden="true"></div>
+  <div class="wrap footer-inner">
+    <div class="footer-grid">
+      <div>
+        <div class="f-brand-name">
+          <div class="logo-bloom" style="width:24px;height:24px;" aria-hidden="true"></div>
+          Project MindBloom
+        </div>
+        <p class="f-desc">A youth-led mental health &amp; well-being initiative dedicated to creating safe, supportive, and empowering spaces for young people in Pune and beyond.</p>
+        <p class="f-tag">Pune, India · Est. 2025</p>
+      </div>
+      <div class="f-col">
+        <p class="f-col-title">Explore</p>
+        <ul>
+          <li><a href="#about">About MindBloom</a></li>
+          <li><a href="#what">What We Do</a></li>
+          <li><a href="#calendar">Awareness Calendar</a></li>
+          <li><a href="#stories">Community Wall</a></li>
+          <li><a href="#join">Join the Team</a></li>
+        </ul>
+      </div>
+      <div class="f-col">
+        <p class="f-col-title">Get Involved</p>
+        <ul>
+          <li><a href="#join">Volunteer</a></li>
+          <li><a href="#join">Partner / Collaborate</a></li>
+          <li><a href="#join">Sponsor / Donate</a></li>
+          <li><a href="#join">Schools &amp; NGOs</a></li>
+          <li><a href="#stories">Share a Story</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>&copy; 2025 Project MindBloom. All rights reserved.</span>
+      <span class="footer-by">By youth, for youth 🌸</span>
+    </div>
+  </div>
+</footer>
+
+<!-- ============================================================
+     JAVASCRIPT
+============================================================ -->
+<script>
+/* Custom Cursor */
+(function () {
+  const pin  = document.getElementById('cur-pin');
+  const ring = document.getElementById('cur-ring');
+  let mx = 0, my = 0, rx = 0, ry = 0;
+
+  document.addEventListener('mousemove', e => {
+    mx = e.clientX; my = e.clientY;
+    pin.style.left = mx + 'px'; pin.style.top = my + 'px';
+  });
+
+  (function tick() {
+    rx += (mx - rx) * 0.1; ry += (my - ry) * 0.1;
+    ring.style.left = rx + 'px'; ring.style.top = ry + 'px';
+    requestAnimationFrame(tick);
+  })();
+
+  document.querySelectorAll('a, button, .sticker-note, .bento-card, .cal-event, .pillar, .role-chip, .month-item').forEach(el => {
+    el.addEventListener('mouseenter', () => document.body.classList.add('hover-pin'));
+    el.addEventListener('mouseleave', () => document.body.classList.remove('hover-pin'));
+  });
+})();
+
+/* Parallax hero headline */
+(function () {
+  const el = document.querySelector('.hero-h1-red');
+  if (!el) return;
+  window.addEventListener('scroll', () => {
+    el.style.transform = `translateY(${window.scrollY * 0.08}px)`;
+  }, { passive: true });
+})();
+
+/* Fade-up */
+(function () {
+  const obs = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); obs.unobserve(e.target); } });
+  }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+  document.querySelectorAll('.fade-up').forEach(el => obs.observe(el));
+})();
+
+/* Meter bars */
+(function () {
+  const obs = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.querySelectorAll('.mfill').forEach(f => {
+          f.style.width = f.dataset.target + '%';
+          f.setAttribute('aria-valuenow', f.dataset.target);
+        });
+        obs.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.3 });
+  const c = document.getElementById('card-stress');
+  if (c) obs.observe(c);
+})();
+
+/* Calendar tabs */
+(function () {
+  const items  = document.querySelectorAll('.month-item');
+  const panels = document.querySelectorAll('[role="tabpanel"]');
+  function show(m) {
+    panels.forEach(p => p.classList.add('detail-hidden'));
+    items.forEach(i => { i.classList.remove('active'); i.setAttribute('aria-selected','false'); });
+    const p = document.getElementById('detail-' + m);
+    const i = document.querySelector(`[data-month="${m}"]`);
+    if (p) p.classList.remove('detail-hidden');
+    if (i) { i.classList.add('active'); i.setAttribute('aria-selected','true'); }
+  }
+  items.forEach(item => {
+    item.addEventListener('click', () => show(item.dataset.month));
+    item.addEventListener('keydown', e => { if (e.key==='Enter'||e.key===' ') { e.preventDefault(); show(item.dataset.month); } });
+  });
+})();
+
+/* Story Wall — API-connected ────────────────────────────── */
+(function () {
+  const API      = 'http://localhost:3001/api';
+  const form     = document.getElementById('story-form');
+  const ta       = document.getElementById('story-text');
+  const cc       = document.getElementById('char-count');
+  const wall     = document.getElementById('sticker-wall');
+  const loading  = document.getElementById('wall-loading');
+  const offline  = document.getElementById('wall-offline');
+  const banner   = document.getElementById('form-banner');
+  const submitBtn= document.getElementById('submit-story');
+  const countBadge = document.getElementById('story-count-badge');
+  if (!form || !wall) return;
+
+  const ROTS   = ['-2.5deg','1.5deg','-1deg','2.2deg','-1.8deg','1deg','0.6deg','-0.5deg'];
+
+  /* ── Show banner ─────────────────────────────────────────── */
+  function showBanner(msg, type) {
+    banner.textContent = msg;
+    Object.assign(banner.style, {
+      display: 'block',
+      background: type === 'error'
+        ? 'rgba(184,50,50,0.12)'
+        : 'rgba(107,139,174,0.12)',
+      border: type === 'error'
+        ? '2px solid rgba(184,50,50,0.4)'
+        : '2px solid rgba(107,139,174,0.35)',
+      color: type === 'error' ? '#8B1A1A' : '#2C4875',
+    });
+    clearTimeout(banner._t);
+    if (type !== 'error') {
+      banner._t = setTimeout(() => { banner.style.display = 'none'; }, 5000);
+    }
+  }
+
+  /* ── Build sticker DOM node ──────────────────────────────── */
+  function buildSticker(story) {
+    const COLORS = ['sn-y','sn-m','sn-l','sn-p','sn-b','sn-k'];
+    const rot    = ROTS[Math.floor(Math.random() * ROTS.length)];
+    const cls    = story.sticker_color || COLORS[Math.floor(Math.random() * COLORS.length)];
+    const note   = document.createElement('div');
+    note.className = `sticker-note ${cls}`;
+    note.style.setProperty('--r', rot);
+    note.dataset.id = story.id;
+    const time = story.created_at
+      ? new Date(story.created_at).toLocaleDateString('en-IN', { day:'numeric', month:'short' })
+      : '';
+    note.innerHTML =
+      `<span class="s-emoji">${story.emoji || '🌸'}</span>` +
+      `"${story.text}"` +
+      (time ? `<span style="display:block;font-size:0.6rem;opacity:0.4;margin-top:6px;">${time}</span>` : '');
+    return note;
+  }
+
+  /* ── Animate-in a single sticker ─────────────────────────── */
+  function animateIn(el, prepend) {
+    const rot = el.style.getPropertyValue('--r') || '0deg';
+    el.style.opacity = '0';
+    el.style.transform = `rotate(${rot}) scale(0.72)`;
+    el.style.transition = 'opacity 0.4s cubic-bezier(0.34,1.56,0.64,1), transform 0.4s cubic-bezier(0.34,1.56,0.64,1)';
+    if (prepend) wall.prepend(el); else wall.appendChild(el);
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+      el.style.opacity = '1';
+      el.style.transform = `rotate(${rot}) scale(1)`;
+    }));
+  }
+
+  /* ── Load stories from backend ───────────────────────────── */
+  async function loadStories() {
+    try {
+      const res = await fetch(`${API}/stories`);
+      if (!res.ok) throw new Error('bad response');
+      const stories = await res.json();
+
+      loading.style.display  = 'none';
+      wall.style.display     = 'grid';
+      wall.innerHTML         = '';
+
+      if (stories.length === 0) {
+        wall.innerHTML = '<p style="grid-column:span 2;font-size:0.84rem;color:rgba(42,31,20,0.45);font-style:italic;">No stories yet — be the first to share yours 🌸</p>';
+      } else {
+        stories.forEach(s => wall.appendChild(buildSticker(s)));
+        countBadge.textContent = `${stories.length} voice${stories.length !== 1 ? 's' : ''}`;
+        countBadge.style.display = 'inline-block';
+      }
+    } catch (_) {
+      loading.style.display = 'none';
+      offline.style.display = 'block';
+      /* Fallback — show sample stickers so the wall isn't empty */
+      const samples = [
+        { emoji:'😰', text:'I cried in the school bathroom and went back to class like nothing happened.', sticker_color:'sn-y', created_at:null },
+        { emoji:'🏃', text:'Football practice is literally the only 2 hours I stop thinking about exams.', sticker_color:'sn-m', created_at:null },
+        { emoji:'😔', text:'I have 400 followers and still feel completely alone at lunch.', sticker_color:'sn-l', created_at:null },
+        { emoji:'🌱', text:"My coach said 'I believe in you' and that was the first time I believed in myself.", sticker_color:'sn-p', created_at:null },
+        { emoji:'🥱', text:"I'm not lazy. I'm exhausted from pretending everything is fine.", sticker_color:'sn-b', created_at:null },
+        { emoji:'💬', text:"Finally somewhere I don't have to explain why I'm sad.", sticker_color:'sn-k', created_at:null },
+      ];
+      wall.style.display = 'grid';
+      samples.forEach(s => wall.appendChild(buildSticker(s)));
+    }
+  }
+
+  loadStories();
+
+  /* ── Character counter ───────────────────────────────────── */
+  ta.addEventListener('input', () => { cc.textContent = ta.value.length + ' / 280'; });
+
+  /* ── Form submit → POST to API ───────────────────────────── */
+  form.addEventListener('submit', async e => {
+    e.preventDefault();
+    banner.style.display = 'none';
+
+    const feeling = document.getElementById('story-feeling').value;
+    const text    = ta.value.trim();
+
+    /* Client-side pre-check */
+    if (!feeling) { showBanner('Please select how you are feeling 🌸', 'error'); return; }
+    if (!text || text.length < 8) { showBanner('Write a little more — at least 8 characters 🌱', 'error'); return; }
+
+    /* Loading state */
+    submitBtn.disabled    = true;
+    submitBtn.textContent = '⏳ Posting...';
+
+    try {
+      const res  = await fetch(`${API}/stories`, {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body:    JSON.stringify({ feeling, text }),
+      });
+      const data = await res.json();
+
+      if (!res.ok) {
+        /* Server rejected — show its message */
+        showBanner(data.error || 'Something went wrong. Please try again.', 'error');
+        return;
+      }
+
+      /* ✅ Success — animate new sticker to the top */
+      const note = buildSticker(data.story);
+      animateIn(note, true);
+
+      /* Update count badge */
+      const cur = parseInt(countBadge.textContent) || 0;
+      const newCount = cur + 1;
+      countBadge.textContent = `${newCount} voice${newCount !== 1 ? 's' : ''}`;
+      countBadge.style.display = 'inline-block';
+
+      showBanner('🌸 Your story has been added to the wall. You are not alone.', 'success');
+      form.reset();
+      cc.textContent = '0 / 280';
+
+    } catch (_) {
+      showBanner('🔌 Cannot reach the server. Make sure it is running with: node server.js', 'error');
+    } finally {
+      submitBtn.disabled    = false;
+      submitBtn.textContent = '🌸 Add to the Community Wall';
+    }
+  });
+})();
+
+/* Mobile hamburger */
+(function () {
+  const btn   = document.getElementById('hamburger');
+  const links = document.querySelector('.nav-links');
+  if (!btn||!links) return;
+  btn.addEventListener('click', () => {
+    const open = btn.getAttribute('aria-expanded')==='true';
+    btn.setAttribute('aria-expanded', String(!open));
+    if (!open) {
+      Object.assign(links.style, {
+        display:'flex', flexDirection:'column', position:'absolute',
+        top:'62px', left:'0', right:'0',
+        background:' #1A2E4F', padding:'16px 24px 24px',
+        borderBottom:'3px solid #B83232', zIndex:'99', gap:'2px'
+      });
+    } else { links.style.display='none'; }
+  });
+  links.querySelectorAll('a').forEach(a => a.addEventListener('click', () => {
+    links.style.display='none'; btn.setAttribute('aria-expanded','false');
+  }));
+})();
+</script>
+</body>
+</html>
