@@ -190,5 +190,10 @@ app.get('/api/stories/count', async (_req, res) => {
   }
 });
 
+app.get('/api/env', (req, res) => {
+  const keys = Object.keys(process.env).filter(k => k.includes('URL') || k.includes('POSTGRES') || k.includes('DATABASE') || k.includes('NEON') || k.includes('STORAGE'));
+  res.json({ env_keys: keys });
+});
+
 // Export for Vercel Serverless Functions
 module.exports = app;
